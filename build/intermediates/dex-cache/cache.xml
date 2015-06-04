@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.1.1/jars/libs/internal_impl-22.1.1.jar"
+        jumboMode="false"
+        revision="22.0.0"
+        sha1="9e070ad32b2700b0343e8e0cccc437733d91ba3a">
+        <dex dex="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/pre-dexed/debug/internal_impl-22.1.1-c5e309460c59f560d495fc3bdd5c28965a6d2398.jar" />
+    </item>
+    <item
+        jar="/Users/seojunkyo/android-sdks/extras/android/m2repository/com/android/support/support-annotations/22.1.1/support-annotations-22.1.1.jar"
+        jumboMode="false"
+        revision="22.0.0"
+        sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
+        <dex dex="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/pre-dexed/debug/support-annotations-22.1.1-9bc310dc7a792c787a082250d842b67f994223c5.jar" />
+    </item>
+    <item
+        jar="/Users/seojunkyo/.gradle/caches/modules-2/files-2.1/com.parse.bolts/bolts-android/1.2.0/6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd/bolts-android-1.2.0.jar"
+        jumboMode="false"
+        revision="22.0.0"
+        sha1="6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd">
+        <dex dex="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/pre-dexed/debug/bolts-android-1.2.0-733b9aa091a66f8e1b9ac21479badc168cc87b15.jar" />
+    </item>
+    <item
+        jar="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.0"
+        sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
+        <dex dex="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/pre-dexed/debug/classes-afadff0690c697c87a565e0dd634a5b88e18bb6e.jar" />
+    </item>
+    <item
+        jar="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.0"
+        sha1="a3ff3c506644c820eb2bdf06e8339f72be578551">
+        <dex dex="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/pre-dexed/debug/classes-a4fb47c92f1e03a94893d9dd6780f9095fb8b98d.jar" />
+    </item>
+    <item
+        jar="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/exploded-aar/com.facebook.android/facebook-android-sdk/4.2.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.0"
+        sha1="40da745b1ae1f5b7562242e27dbc91a6b0fab3e9">
+        <dex dex="/Users/seojunkyo/GitHub/SympathyMusiz/app/build/intermediates/pre-dexed/debug/classes-5a477811c391da0344fe3ff1d86bdffaa74dae0d.jar" />
+    </item>
+
+</items>
