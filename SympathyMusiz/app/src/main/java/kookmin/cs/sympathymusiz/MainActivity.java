@@ -1,58 +1,26 @@
 package kookmin.cs.sympathymusiz;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
-
-    ListView list;
-    DbOpenHelper dbHelper;
-    SQLiteDatabase db;
-    String sql;
-    Cursor cursor;
-
-    final static String dbName = "mode.db";
-    final static int dbVersion = 1;
+public class MainActivity extends FragmentActivity {
+    private MainFragment mainFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        list = (ListView) findViewById(R.id.modelist);
-        dbHelper = new DbOpenHelper(this, dbName, null, dbVersion);
-
-        selectDB();
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                cursor.moveToPosition(position);
-                String str = cursor.getString(cursor.getColumnIndex("name"));
-                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    private void selectDB(){
-        db = dbHelper.getWritableDatabase();
-        sql = "SELECT * FROM test;";
-
-        cursor = db.rawQuery(sql, null);
-        if(cursor.getCount() > 0){
-            startManagingCursor(cursor);
-            DBAdapter dbAdapter = new DBAdapter(this, cursor);
-            list.setAdapter(dbAdapter);
+        if (savedInstanceState == null) {
+            mainFragment = new MainFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(android.R.id.content, mainFragment)
+                    .commit();
+        } else {
+            mainFragment = (MainFragment) getSupportFragmentManager()
+                    .findFragmentById(android.R.id.content);
         }
     }
 

@@ -34,6 +34,8 @@ public class MainFragment extends Fragment {
             if(profile != null){
                 mTextDetails.setText("Welcome" + profile.getName());
             }
+            Intent intent = new Intent(getActivity(), ModeActivity.class);
+            startActivity(intent);
         }
 
         @Override
