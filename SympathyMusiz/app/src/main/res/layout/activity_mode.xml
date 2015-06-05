@@ -12,6 +12,7 @@
 
         <ImageButton
             android:id="@+id/home"
+            android:src="@drawable/user"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentLeft="true"
@@ -33,6 +34,7 @@
 
         <ImageButton
             android:id="@+id/edit_mode"
+            android:src="@drawable/list"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
@@ -43,18 +45,34 @@
     </RelativeLayout>
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="#000000"></LinearLayout>
-    <RelativeLayout
-        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        >
+        android:orientation="vertical"
+        android:layout_marginTop="100dp">
 
-        <ListView
-            android:id="@+id/modelist"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"></ListView>
-    </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="샘플곡 업로드"
+            android:textSize="23dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"/>
 
+        <Button
+            android:id="@+id/upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="파일추가"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:layout_gravity="center_horizontal"
+            android:text="음악 추천"/>
+
+
+
+    </LinearLayout>
 
 </LinearLayout>
