@@ -52,9 +52,6 @@ public class FileSelectionActivity extends Activity {
         setContentView(R.layout.activity_file_selection);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
-
         directoryView = (ListView)findViewById(R.id.directorySelectionList);
         ok = (Button)findViewById(R.id.ok);
         all = (Button)findViewById(R.id.all);
@@ -63,10 +60,8 @@ public class FileSelectionActivity extends Activity {
         New = (Button)findViewById(R.id.New);
         path = (TextView)findViewById(R.id.folderpath);
 
-
         loadLists();
         New.setEnabled(false);
-
 
         ExtStorageSearch();
         if(secondary_sd==null){

@@ -29,10 +29,17 @@ public class ModeActivity extends ActionBarActivity {
         setContentView(R.layout.activity_mode);
 
         Button upload = (Button)findViewById(R.id.upload);
+        Button recomd = (Button)findViewById(R.id.recomd);
 
         upload.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(ModeActivity.this, FileSelectionActivity.class);
+                startActivity(intent);
+            }
+        });
+        recomd.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(ModeActivity.this, ListActivity.class);
                 startActivity(intent);
             }
         });
