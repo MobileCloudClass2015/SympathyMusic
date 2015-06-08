@@ -29,4 +29,6 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.2.0'
     compile files('libs/picasso-2.4.0.jar')
     compile files('libs/cwac-merge-1.0.4.jar')
+    compile fileTree(dir: 'libs/youtube', include: '*.jar')
+    compile fileTree(dir: 'libs/youtube/libs', include: '*.jar')
 }

@@ -17,21 +17,21 @@ public class MyApplication extends Application {
 
     @Override
     public void onCreate() {
+
         super.onCreate();
         printHashKey();
     }
 
     public void printHashKey() {
-
         // Add code to print out the key hash
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.example.seojunkyo.sympathymusiz",
+                    "kookmin.cs.sympathymusiz",
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                Log.d("VIVZ:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         } catch (PackageManager.NameNotFoundException e) {
 
