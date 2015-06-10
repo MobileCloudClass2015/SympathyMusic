@@ -30,4 +30,5 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.2.0'
     compile files('libs/picasso-2.4.0.jar')
     compile files('libs/cwac-merge-1.0.4.jar')
+    compile files('libs/YouTubeAndroidPlayerApi.jar')
 }
