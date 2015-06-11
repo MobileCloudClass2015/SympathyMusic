@@ -1,6 +1,7 @@
 package kookmin.cs.sympathymusiz;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,7 +18,22 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 
 /**
@@ -25,6 +41,10 @@ import org.json.JSONObject;
  */
 public class MainFragment extends Fragment {
 
+    public JSONObject jsonObj;
+    public String json;
+    public String userid = null;
+    public String username = null;
 
     private CallbackManager mCallbackManager;
     private FacebookCallback<LoginResult> mcallback = new FacebookCallback<LoginResult>() {
@@ -36,9 +56,14 @@ public class MainFragment extends Fragment {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             // Application code
-                            Log.v("LoginActivity", response.toString());
+                            jsonObj = object;
+                            MyDownloadTask task = new MyDownloadTask();
+                            task.execute();
                         }
                     });
+
+
+
             Bundle parameters = new Bundle();
             parameters.putString("fields", "id,name,email,gender, birthday");
             request.setParameters(parameters);
@@ -94,5 +119,63 @@ public class MainFragment extends Fragment {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void
+
+    class MyDownloadTask extends AsyncTask<Void, Void, Void> {
+        public static final String TAG = "YOUR-TAG-NAME";
+        protected void onPreExecute() {
+            //display progress dialog.
+        }
+
+        protected Void doInBackground(Void... param) {
+            InputStream inputStream;
+            String result = "";
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+
+                String json = jsonObj.toString();
+
+                Log.v("JSON", json);
+
+                HttpPost httpPost = new HttpPost("http://52.68.183.62:9000/Sympathy/user/register/");
+
+                ArrayList<NameValuePair> post = new ArrayList<NameValuePair>();
+
+                HttpParams params = httpclient.getParams();
+                HttpConnectionParams.setConnectionTimeout(params, 5000);
+                HttpConnectionParams.setSoTimeout(params, 5000);
+
+                post.add(new BasicNameValuePair("data", json));
+
+                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(post, "UTF-8");
+                httpPost.setEntity(entity);
+
+                HttpResponse httpResponse = httpclient.execute(httpPost);
+
+                //Log.d(TAG,httpResponse.toString());
+
+                if (httpResponse != null) {
+                    inputStream = httpResponse.getEntity().getContent();
+
+                    if (inputStream != null) {
+                        result = convertInputStreamToString(inputStream);
+                        Log.d(TAG, result);
+                    } else
+                        result = "Didn't work!";
+                }
+            } catch (Exception e) {
+                Log.d("InputStream", e.getLocalizedMessage());
+            }
+            return null;
+        }
+        private String convertInputStreamToString(InputStream inputStream) throws IOException {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            String result = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                result += line;
+            }
+            inputStream.close();
+            return result;
+        }
+    }
 }

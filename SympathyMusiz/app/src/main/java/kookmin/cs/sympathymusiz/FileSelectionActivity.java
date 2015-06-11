@@ -98,7 +98,6 @@ public class FileSelectionActivity extends Activity {
             storage.setEnabled(false);
         }
 
-
         directoryView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -131,8 +130,6 @@ public class FileSelectionActivity extends Activity {
                 }
             }
         });
-
-
 
         cancel.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -258,10 +255,8 @@ public class FileSelectionActivity extends Activity {
 
     class MyDownloadTask extends AsyncTask<Void, Void, Void> {
 
-
         protected void onPreExecute() {
             //display progress dialog.
-
         }
 
         protected Void doInBackground(Void... param) {
@@ -291,12 +286,9 @@ public class FileSelectionActivity extends Activity {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(post, "UTF-8");
                 httpPost.setEntity(entity);
 
-
-
                 HttpResponse httpResponse = httpclient.execute(httpPost);
 
                 //Log.d(TAG,httpResponse.toString());
-
 
                 if (httpResponse != null) {
                     inputStream = httpResponse.getEntity().getContent();
@@ -326,66 +318,64 @@ public class FileSelectionActivity extends Activity {
         }
     }
 
-
-        private void loadLists() {
-            FileFilter fileFilter = new FileFilter() {
-                public boolean accept(File file) {
-                    return file.isFile();
-                }
-            };
-            FileFilter directoryFilter = new FileFilter() {
+    private void loadLists() {
+        FileFilter fileFilter = new FileFilter() {
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        };
+        FileFilter directoryFilter = new FileFilter() {
                 public boolean accept(File file) {
                     return file.isDirectory();
                 }
             };
 
-            //if(mainPath.exists() && mainPath.length()>0){
-            //Lista de directorios
-            File[] tempDirectoryList = mainPath.listFiles(directoryFilter);
+        //if(mainPath.exists() && mainPath.length()>0){
+        //Lista de directorios
+        File[] tempDirectoryList = mainPath.listFiles(directoryFilter);
 
-            if (tempDirectoryList != null && tempDirectoryList.length > 1) {
-                Arrays.sort(tempDirectoryList, new Comparator<File>() {
+        if (tempDirectoryList != null && tempDirectoryList.length > 1) {
+            Arrays.sort(tempDirectoryList, new Comparator<File>() {
                     @Override
                     public int compare(File object1, File object2) {
-                        return object1.getName().compareTo(object2.getName());
-                    }
+                    return object1.getName().compareTo(object2.getName());
+                }
                 });
-            }
-
-            directoryList = new ArrayList<File>();
-            directoryNames = new ArrayList<String>();
-            for (File file : tempDirectoryList) {
-                directoryList.add(file);
-                directoryNames.add(file.getName());
-            }
-            ArrayAdapter<String> directoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, directoryNames);
-
-
-            //Lista de ficheros
-            File[] tempFileList = mainPath.listFiles(fileFilter);
-
-            if (tempFileList != null && tempFileList.length > 1) {
-                Arrays.sort(tempFileList, new Comparator<File>() {
-                    @Override
-                    public int compare(File object1, File object2) {
-                        return object1.getName().compareTo(object2.getName());
-                    }
-                });
-            }
-
-            fileList = new ArrayList<File>();
-            fileNames = new ArrayList<String>();
-            for (File file : tempFileList) {
-                fileList.add(file);
-                fileNames.add(file.getName());
-            }
-
-
-            path.setText(mainPath.toString());
-            iconload();
-            setTitle(mainPath.getName());
-            //}
         }
+
+        directoryList = new ArrayList<File>();
+        directoryNames = new ArrayList<String>();
+        for (File file : tempDirectoryList) {
+            directoryList.add(file);
+            directoryNames.add(file.getName());
+        }
+        ArrayAdapter<String> directoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, directoryNames);
+
+        //Lista de ficheros
+        File[] tempFileList = mainPath.listFiles(fileFilter);
+
+        if (tempFileList != null && tempFileList.length > 1) {
+            Arrays.sort(tempFileList, new Comparator<File>() {
+                    @Override
+                    public int compare(File object1, File object2) {
+                    return object1.getName().compareTo(object2.getName());
+                }
+                });
+        }
+
+        fileList = new ArrayList<File>();
+        fileNames = new ArrayList<String>();
+        for (File file : tempFileList) {
+            fileList.add(file);
+            fileNames.add(file.getName());
+        }
+
+
+        path.setText(mainPath.toString());
+        iconload();
+        setTitle(mainPath.getName());
+        //}
+    }
 
         /**
          * @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -402,51 +392,48 @@ public class FileSelectionActivity extends Activity {
          * }*
          */
 
-        public void iconload() {
-            String[] foldernames = new String[directoryNames.size()];
-            foldernames = directoryNames.toArray(foldernames);
+    public void iconload() {
+        String[] foldernames = new String[directoryNames.size()];
+        foldernames = directoryNames.toArray(foldernames);
 
-            String[] filenames = new String[fileNames.size()];
-            filenames = fileNames.toArray(filenames);
+        String[] filenames = new String[fileNames.size()];
+        filenames = fileNames.toArray(filenames);
 
-            CustomListSingleOnly adapter1 = new CustomListSingleOnly(FileSelectionActivity.this, directoryNames.toArray(foldernames), mainPath.getPath());
-            CustomList adapter2 = new CustomList(FileSelectionActivity.this, fileNames.toArray(filenames), mainPath.getPath());
-
-
-            MergeAdapter adap = new MergeAdapter();
-
-            adap.addAdapter(adapter1);
-            adap.addAdapter(adapter2);
+        CustomListSingleOnly adapter1 = new CustomListSingleOnly(FileSelectionActivity.this, directoryNames.toArray(foldernames), mainPath.getPath());
+        CustomList adapter2 = new CustomList(FileSelectionActivity.this, fileNames.toArray(filenames), mainPath.getPath());
 
 
-            directoryView.setAdapter(adap);
+        MergeAdapter adap = new MergeAdapter();
+
+        adap.addAdapter(adapter1);
+        adap.addAdapter(adapter2);
+
+
+        directoryView.setAdapter(adap);
+    }
+
+    public void ExtStorageSearch() {
+        String[] extStorlocs = {"/storage/sdcard1", "/storage/extsdcard", "/storage/sdcard0/external_sdcard", "/mnt/extsdcard",
+                "/mnt/sdcard/external_sd", "/mnt/external_sd", "/mnt/media_rw/sdcard1", "/removable/microsd", "/mnt/emmc",
+                "/storage/external_SD", "/storage/ext_sd", "/storage/removable/sdcard1", "/data/sdext", "/data/sdext2",
+                "/data/sdext3", "/data/sdext4", "/storage/sdcard0"};
+
+        //First Attempt
+        primary_sd = System.getenv("EXTERNAL_STORAGE");
+        secondary_sd = System.getenv("SECONDARY_STORAGE");
+
+
+        if (primary_sd == null) {
+            primary_sd = Environment.getExternalStorageDirectory() + "";
         }
-
-        public void ExtStorageSearch() {
-            String[] extStorlocs = {"/storage/sdcard1", "/storage/extsdcard", "/storage/sdcard0/external_sdcard", "/mnt/extsdcard",
-                    "/mnt/sdcard/external_sd", "/mnt/external_sd", "/mnt/media_rw/sdcard1", "/removable/microsd", "/mnt/emmc",
-                    "/storage/external_SD", "/storage/ext_sd", "/storage/removable/sdcard1", "/data/sdext", "/data/sdext2",
-                    "/data/sdext3", "/data/sdext4", "/storage/sdcard0"};
-
-            //First Attempt
-            primary_sd = System.getenv("EXTERNAL_STORAGE");
-            secondary_sd = System.getenv("SECONDARY_STORAGE");
-
-
-            if (primary_sd == null) {
-                primary_sd = Environment.getExternalStorageDirectory() + "";
-            }
-            if (secondary_sd == null) {//if fail, search among known list of extStorage Locations
-                for (String string : extStorlocs) {
-                    if ((new File(string)).exists() && (new File(string)).isDirectory()) {
-                        secondary_sd = string;
-                        break;
-                    }
+        if (secondary_sd == null) {//if fail, search among known list of extStorage Locations
+            for (String string : extStorlocs) {
+                if ((new File(string)).exists() && (new File(string)).isDirectory()) {
+                    secondary_sd = string;
+                    break;
                 }
             }
-
         }
-
-
     }
+}
 
