@@ -30,6 +30,7 @@ public class ModeActivity extends ActionBarActivity {
 
         Button upload = (Button)findViewById(R.id.upload);
         Button recomd = (Button)findViewById(R.id.recomd);
+        Button video = (Button)findViewById(R.id.videobtn);
 
         upload.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -43,6 +44,13 @@ public class ModeActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+        video.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(ModeActivity.this, VideoListDemoActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 
