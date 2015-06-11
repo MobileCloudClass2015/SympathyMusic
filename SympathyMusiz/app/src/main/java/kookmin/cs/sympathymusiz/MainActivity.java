@@ -23,6 +23,8 @@ public class MainActivity extends FragmentActivity {
             mainFragment = (MainFragment) getSupportFragmentManager()
                     .findFragmentById(android.R.id.content);
         }
+
+
     }
 
     @Override

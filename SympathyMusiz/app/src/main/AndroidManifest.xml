@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,6 +35,8 @@
         <activity android:name=".FileSelectionActivity"></activity>
 
         <activity android:name=".ListActivity"></activity>
+
+        <activity android:name=".VideoListDemoActivity"></activity>
 
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
