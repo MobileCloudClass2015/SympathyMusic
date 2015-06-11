@@ -17,8 +17,10 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from testapp.views import user_register
 from testapp.views import music_recommend
+from testapp.views import music_upload
 
 urlpatterns = patterns('',
 	url(r'^Sympathy/user/register/$', user_register),
-	url(r'^Sympathy/music/recommend/$', music_recommend)
+	url(r'^Sympathy/music/recommend/$', music_recommend),
+	url(r'^Sympathy/music/upload/$', music_upload)
 )

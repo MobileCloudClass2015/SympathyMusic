@@ -52,3 +52,19 @@ def user_register(request):  #client 2 server login
 
 
 
+@csrf_exempt
+def music_upload(request):
+	print "upload"
+	if request.method == 'POST':
+		if 'file' in request.FILES:
+			file = request.FILES['file']
+			filename = file._name
+
+			fp = open('%s/%s' % ("upload", filename) , 'wb')
+
+			for chunk in file.chunks():
+				fp.write(chunk)
+			fp.close()
+			return HttpResponse('File Uploaded')
+	return HttpResponse('Failed to Upload File')
+
