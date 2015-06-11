@@ -182,13 +182,15 @@ public class FileSelectionActivity extends Activity {
         for(int i = 0 ; i < directoryView.getCount(); i++){
             if(directoryView.isItemChecked(i)){
                 resultFileList.add(fileList.get(i-directoryList.size()));
+                Log.d(TAG, "되는것인가?");
             }
+            //Log.d(TAG, "되는것인가?");
         }
         if(resultFileList.isEmpty()){
             Log.d(TAG, "Nada seleccionado");
             finish();
         }
-        final String tempurl = resultFileList.toString();
+        final String tempurl = mainPath.toString()+resultFileList.toString();
         Toast.makeText(getApplicationContext(), tempurl+"ㄴ어ㅏ리ㅏㄴ", Toast.LENGTH_LONG).show();
 
 
