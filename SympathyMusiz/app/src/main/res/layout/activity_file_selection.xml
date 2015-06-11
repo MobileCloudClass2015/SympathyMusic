@@ -58,12 +58,12 @@
             android:id="@+id/cancel"
             android:layout_weight="30" />
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="all"
-        android:id="@+id/all"
-        android:layout_weight="30" />
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="all"
+            android:id="@+id/all"
+            android:layout_weight="30" />
 
         <Button
             android:layout_width="fill_parent"
@@ -71,5 +71,5 @@
             android:text="ok"
             android:id="@+id/ok"
             android:layout_weight="30" />
-</LinearLayout>
+    </LinearLayout>
 </LinearLayout>

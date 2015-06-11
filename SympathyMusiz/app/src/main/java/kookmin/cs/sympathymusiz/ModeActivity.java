@@ -34,8 +34,8 @@ public class ModeActivity extends ActionBarActivity {
 
         upload.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(ModeActivity.this, FileSelectionActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(getBaseContext(), FileSelectionActivity.class);
+                startActivityForResult(intent, 0);
             }
         });
         recomd.setOnClickListener(new Button.OnClickListener() {
