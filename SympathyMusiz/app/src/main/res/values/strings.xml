@@ -15,5 +15,6 @@
     <string name="New">New Folder</string>
     <string name="CNew">Enter New Folder Name</string>
     <string name="create">Create</string>
+    <string name="main_activity_uploading_progress_dialog_context">Uploading file. Please wait&#8230;</string>
 
 </resources>

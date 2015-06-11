@@ -27,6 +27,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,11 +41,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class FileSelectionActivity extends Activity {
+public class FileSelectionActivity extends Activity implements UploadFileCallback {
 
     private static final String TAG = "FileSelection";
     private static final String FILES_TO_UPLOAD = "upload";
-    File mainPath = new File(Environment.getExternalStorageDirectory()+"/Sounds/");
+    File mainPath = new File(Environment.getExternalStorageDirectory()+"/Music/");
     private ArrayList<File> resultFileList;
 
     private ListView directoryView;
@@ -68,6 +69,8 @@ public class FileSelectionActivity extends Activity {
 
 
     //서버에 올리기 위한 부분
+
+    private ProgressDialog pDialog = null;
 
     ProgressDialog dialog = null;
     TextView messageText;
@@ -222,9 +225,7 @@ public class FileSelectionActivity extends Activity {
 
 
 
-        /*
-        //서버에 올려야 할 부분
-
+/*
         messageText.setText("Uploading file path :- "+tempurl+"'");
 
         upLoadServerUri = "http://www.androidexample.com/media/UploadToServer.php";
@@ -244,19 +245,199 @@ public class FileSelectionActivity extends Activity {
 
             }
         }).start();
-        */
+*/
+        new MyDownloadTask().execute(fileList.get(0).toString());
 
-        new MyDownloadTask().execute();
+        Log.d(TAG, "안나오면 죽ㅇ버려");
+//        new UploadFileFromURL(FileSelectionActivity.this).execute("http://52.68.183.62:9000/Sympathy/music/upload/", fileList.get(1).toString(),fileList.get(1).toString());
 
 
-        Log.d(TAG, "Files: "+resultFileList.toString());
+        Log.d(TAG, "Files: " + resultFileList.toString());
         Intent result = this.getIntent();
         result.putExtra(FILES_TO_UPLOAD, resultFileList);
         setResult(Activity.RESULT_OK, result);
         finish();
     }
 
-    class MyDownloadTask extends AsyncTask<Void, Void, Void> {
+    @Override
+    public void onUploadFilePreExecute() {
+        // TODO Auto-generated method stub
+        /*
+        pDialog = new ProgressDialog(FileSelectionActivity.this);
+        pDialog.setMessage(getResources().getString(
+                R.string.main_activity_uploading_progress_dialog_context));
+        pDialog.setIndeterminate(false);// ¨ú®ø¶i«×±ø
+        pDialog.setCancelable(true);// ¶}±Ò¨ú®ø
+        pDialog.setMax(100);
+        pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        pDialog.show();
+        */
+    }
+
+    @Override
+    public void onUploadFileProgressUpdate(int value) {
+        // TODO Auto-generated method stub
+//        pDialog.setProgress(value);
+
+    }
+
+    @Override
+    public void doUploadFilePostExecute(String result) {
+        // TODO Auto-generated method stub
+  //      pDialog.dismiss();
+        if (result != null) {
+            Toast.makeText(FileSelectionActivity.this, result, Toast.LENGTH_LONG).show();
+        }
+    }
+/*
+
+    public int uploadFile(String sourceFileUri) {
+
+
+        String fileName = sourceFileUri;
+
+        HttpURLConnection conn = null;
+        DataOutputStream dos = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+
+        if (!sourceFile.isFile()) {
+
+            dialog.dismiss();
+
+            Log.e("uploadFile", "Source File not exist :"
+                    +uploadFilePath + "" + uploadFileName);
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    messageText.setText("Source File not exist :"
+                            +uploadFilePath + "" + uploadFileName);
+                }
+            });
+
+            return 0;
+
+        }
+        else
+        {
+            try {
+
+                // open a URL connection to the Servlet
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL(upLoadServerUri);
+
+                // Open a HTTP  connection to  the URL
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true); // Allow Inputs
+                conn.setDoOutput(true); // Allow Outputs
+                conn.setUseCaches(false); // Don't use a Cached Copy
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
+
+                dos = new DataOutputStream(conn.getOutputStream());
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name="uploaded_file";filename=""
+                                + fileName + """ + lineEnd);
+
+                        dos.writeBytes(lineEnd);
+
+                // create a buffer of  maximum size
+                bytesAvailable = fileInputStream.available();
+
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                // read file and write it into form...
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                }
+
+                // send multipart form data necesssary after file data...
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Responses from the server (code and message)
+                serverResponseCode = conn.getResponseCode();
+                String serverResponseMessage = conn.getResponseMessage();
+
+                Log.i("uploadFile", "HTTP Response is : "
+                        + serverResponseMessage + ": " + serverResponseCode);
+
+                if(serverResponseCode == 200){
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+
+                            String msg = "File Upload Completed.\n\n See uploaded file here : \n\n"
+                                    +" http://www.androidexample.com/media/uploads/"
+                                    +uploadFileName;
+
+                            messageText.setText(msg);
+                            Toast.makeText(UploadToServer.this, "File Upload Complete.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                //close the streams //
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch (MalformedURLException ex) {
+
+                dialog.dismiss();
+                ex.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        messageText.setText("MalformedURLException Exception : check script url.");
+                        Toast.makeText(UploadToServer.this, "MalformedURLException",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+            } catch (Exception e) {
+
+                dialog.dismiss();
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        messageText.setText("Got Exception : see logcat ");
+                        Toast.makeText(UploadToServer.this, "Got Exception : see logcat ",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.e("Upload file to server Exception", "Exception : "
+                        + e.getMessage(), e);
+            }
+            dialog.dismiss();
+            return serverResponseCode;
+
+        } // End else block
+    }
+
+*/
+
+    class MyDownloadTask extends AsyncTask<String, String, Void> {
 
 
         protected void onPreExecute() {
@@ -264,21 +445,36 @@ public class FileSelectionActivity extends Activity {
 
         }
 
-        protected Void doInBackground(Void... param) {
+        protected Void doInBackground(String... param) {
             InputStream inputStream;
             String result = "";
             try {
+                String[] splitdata = param[0].split("/");
+                Log.d(TAG,splitdata[5]);
+
+                String[] upload1 = splitdata[5].split("-");
+                Log.d(TAG,upload1[0]);
+                Log.d(TAG,upload1[1]);
+
+
+
+                upload1[1] = upload1[1].replace(".mp3","");
+                Log.d(TAG,"씨발");
+
+
+
                 HttpClient httpclient = new DefaultHttpClient();
 
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.accumulate("artist", "자우림");
-                jsonObject.accumulate("title", "일탈");
+                jsonObject.accumulate("artist", upload1[0]);
+                jsonObject.accumulate("title", upload1[1]);
                 jsonObject.accumulate("start", 0);
-                jsonObject.accumulate("count", 5);
+                jsonObject.accumulate("count", 1);
 
                 String json = jsonObject.toString();
+                Log.d(TAG,json);
 
-                HttpPost httpPost = new HttpPost("http://52.68.55.182/soundnerd/music/search");
+                HttpPost httpPost = new HttpPost("http://52.68.183.62:9000/Sympathy/music/search/");
 
                 ArrayList<NameValuePair> post = new ArrayList<NameValuePair>();
 
@@ -295,20 +491,49 @@ public class FileSelectionActivity extends Activity {
 
                 HttpResponse httpResponse = httpclient.execute(httpPost);
 
-                //Log.d(TAG,httpResponse.toString());
+                Log.d(TAG,httpResponse.toString());
 
 
                 if (httpResponse != null) {
                     inputStream = httpResponse.getEntity().getContent();
 
                     if (inputStream != null) {
+
                         result = convertInputStreamToString(inputStream);
                         Log.d(TAG, result);
+
+
+                        JSONObject object = new JSONObject(result);
+                        JSONArray Array = new JSONArray(object.getString("tracks"));
+                        ArrayList<ArrayList<String>> mGroupList = new ArrayList<ArrayList<String>>();
+                        ArrayList<String> passdata = null;
+                        for (int i=0; i< Array.length(); i++)
+                        {
+                            JSONObject insideObject = Array.getJSONObject(i);
+
+
+                            ArrayList<String> mChildList = new ArrayList<String>();
+
+                            mChildList.add(insideObject.getString("url"));
+                            mChildList.add(insideObject.getString("title"));
+                            mGroupList.add(mChildList);
+                            VideoListDemoActivity.VideoListFragment test = null;
+                            test.addlist(insideObject.getString("title"),insideObject.getString("url"));
+                            passdata.add(insideObject.getString("title"));
+                            passdata.add(insideObject.getString("url"));
+                        }
+                        Intent exIntent = new Intent(FileSelectionActivity.this,VideoListDemoActivity.class);
+                        exIntent.putStringArrayListExtra("test", passdata);
+                        startActivity(exIntent);
+
+
+
+
                     } else
                         result = "Didn't work!";
                 }
             } catch (Exception e) {
-                Log.d("InputStream", e.getLocalizedMessage());
+//                Log.d("InputStream", e.getLocalizedMessage());
             }
             return null;
         }
