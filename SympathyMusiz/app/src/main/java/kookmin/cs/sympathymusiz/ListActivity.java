@@ -1,7 +1,6 @@
 package kookmin.cs.sympathymusiz;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
@@ -10,13 +9,9 @@ import android.view.View;
  */
 public class ListActivity extends FragmentActivity implements View.OnClickListener{
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.play_list);
-
-
-
-
     }
 
     public void onClick(View v) {
