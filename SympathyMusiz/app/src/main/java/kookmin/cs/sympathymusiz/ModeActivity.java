@@ -31,6 +31,8 @@ public class ModeActivity extends ActionBarActivity {
 
         ImageButton upload = (ImageButton)findViewById(R.id.upload);
         ImageButton recomd = (ImageButton)findViewById(R.id.recomd);
+        ImageButton account = (ImageButton)findViewById(R.id.account);
+        ImageButton menu = (ImageButton)findViewById(R.id.menu);
         Button video = (Button)findViewById(R.id.videobtn);
 
         upload.setOnClickListener(new Button.OnClickListener() {
@@ -51,8 +53,10 @@ public class ModeActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
-
-
+        account.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            }
+        });
     }
 
     private void selectDB(){
