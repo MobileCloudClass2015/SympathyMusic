@@ -3,6 +3,7 @@ package kookmin.cs.sympathymusiz;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -17,8 +18,24 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.merge.MergeAdapter;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -105,7 +122,13 @@ public class FileSelectionActivity extends Activity {
 
         ok.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                ok();
+                try {
+                    ok();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -173,7 +196,7 @@ public class FileSelectionActivity extends Activity {
         }
     }
 
-    public void ok(){
+    public void ok() throws IOException, JSONException {
         Log.d(TAG, "Upload clicked, finishing activity");
 
 
@@ -191,7 +214,10 @@ public class FileSelectionActivity extends Activity {
             finish();
         }
         final String tempurl = mainPath.toString()+resultFileList.toString();
-        Toast.makeText(getApplicationContext(), tempurl+"ㄴ어ㅏ리ㅏㄴ", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), fileList.toString(), Toast.LENGTH_LONG).show();
+        Log.d(TAG, fileList.toString());
+
+
 
 
 
@@ -220,6 +246,7 @@ public class FileSelectionActivity extends Activity {
         }).start();
         */
 
+        new MyDownloadTask().execute();
 
 
         Log.d(TAG, "Files: "+resultFileList.toString());
@@ -229,274 +256,197 @@ public class FileSelectionActivity extends Activity {
         finish();
     }
 
-
-    /*
-    public int uploadFile(String sourceFileUri) {
+    class MyDownloadTask extends AsyncTask<Void, Void, Void> {
 
 
-        String fileName = sourceFileUri;
-
-        HttpURLConnection conn = null;
-        DataOutputStream dos = null;
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        File sourceFile = new File(sourceFileUri);
-
-        if (!sourceFile.isFile()) {
-
-            dialog.dismiss();
-
-            Log.e("uploadFile", "Source File not exist :"
-                    +uploadFilePath + "" + uploadFileName);
-
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    messageText.setText("Source File not exist :"
-                            +uploadFilePath + "" + uploadFileName);
-                }
-            });
-
-            return 0;
+        protected void onPreExecute() {
+            //display progress dialog.
 
         }
-        else
-        {
+
+        protected Void doInBackground(Void... param) {
+            InputStream inputStream;
+            String result = "";
             try {
+                HttpClient httpclient = new DefaultHttpClient();
 
-                // open a URL connection to the Servlet
-                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                URL url = new URL(upLoadServerUri);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.accumulate("artist", "자우림");
+                jsonObject.accumulate("title", "일탈");
+                jsonObject.accumulate("start", 0);
+                jsonObject.accumulate("count", 5);
 
-                // Open a HTTP  connection to  the URL
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true); // Allow Inputs
-                conn.setDoOutput(true); // Allow Outputs
-                conn.setUseCaches(false); // Don't use a Cached Copy
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                conn.setRequestProperty("uploaded_file", fileName);
+                String json = jsonObject.toString();
 
-                dos = new DataOutputStream(conn.getOutputStream());
+                HttpPost httpPost = new HttpPost("http://52.68.55.182/soundnerd/music/search");
 
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name="uploaded_file";filename=""
-                                + fileName + """ + lineEnd);
+                ArrayList<NameValuePair> post = new ArrayList<NameValuePair>();
 
-                        dos.writeBytes(lineEnd);
+                HttpParams params = httpclient.getParams();
+                HttpConnectionParams.setConnectionTimeout(params, 5000);
+                HttpConnectionParams.setSoTimeout(params, 5000);
 
-                // create a buffer of  maximum size
-                bytesAvailable = fileInputStream.available();
+                post.add(new BasicNameValuePair("data", json));
 
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                buffer = new byte[bufferSize];
+                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(post, "UTF-8");
+                httpPost.setEntity(entity);
 
-                // read file and write it into form...
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-                while (bytesRead > 0) {
 
-                    dos.write(buffer, 0, bufferSize);
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                HttpResponse httpResponse = httpclient.execute(httpPost);
 
+                //Log.d(TAG,httpResponse.toString());
+
+
+                if (httpResponse != null) {
+                    inputStream = httpResponse.getEntity().getContent();
+
+                    if (inputStream != null) {
+                        result = convertInputStreamToString(inputStream);
+                        Log.d(TAG, result);
+                    } else
+                        result = "Didn't work!";
                 }
-
-                // send multipart form data necesssary after file data...
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                // Responses from the server (code and message)
-                serverResponseCode = conn.getResponseCode();
-                String serverResponseMessage = conn.getResponseMessage();
-
-                Log.i("uploadFile", "HTTP Response is : "
-                        + serverResponseMessage + ": " + serverResponseCode);
-
-                if(serverResponseCode == 200){
-
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-
-                            String msg = "File Upload Completed.\n\n See uploaded file here : \n\n"
-                                    +" http://www.androidexample.com/media/uploads/"
-                                    +uploadFileName;
-
-                            messageText.setText(msg);
-                            Toast.makeText(FileSelectionActivity.this, "File Upload Complete.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                //close the streams //
-                fileInputStream.close();
-                dos.flush();
-                dos.close();
-
-            } catch (MalformedURLException ex) {
-
-                dialog.dismiss();
-                ex.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        messageText.setText("MalformedURLException Exception : check script url.");
-                        Toast.makeText(FileSelectionActivity.this, "MalformedURLException",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
             } catch (Exception e) {
+                Log.d("InputStream", e.getLocalizedMessage());
+            }
+            return null;
+        }
 
-                dialog.dismiss();
-                e.printStackTrace();
+        private String convertInputStreamToString(InputStream inputStream) throws IOException {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            String result = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                result += line;
+            }
 
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        messageText.setText("Got Exception : see logcat ");
-                        Toast.makeText(UploadToServer.this, "Got Exception : see logcat ",
-                                Toast.LENGTH_SHORT).show();
+            inputStream.close();
+            return result;
+        }
+    }
+
+
+        private void loadLists() {
+            FileFilter fileFilter = new FileFilter() {
+                public boolean accept(File file) {
+                    return file.isFile();
+                }
+            };
+            FileFilter directoryFilter = new FileFilter() {
+                public boolean accept(File file) {
+                    return file.isDirectory();
+                }
+            };
+
+            //if(mainPath.exists() && mainPath.length()>0){
+            //Lista de directorios
+            File[] tempDirectoryList = mainPath.listFiles(directoryFilter);
+
+            if (tempDirectoryList != null && tempDirectoryList.length > 1) {
+                Arrays.sort(tempDirectoryList, new Comparator<File>() {
+                    @Override
+                    public int compare(File object1, File object2) {
+                        return object1.getName().compareTo(object2.getName());
                     }
                 });
-                Log.e("Upload file to server Exception", "Exception : "
-                        + e.getMessage(), e);
             }
-            dialog.dismiss();
-            return serverResponseCode;
 
-        } // End else block
-    }
-    */
-    private void loadLists(){
-        FileFilter fileFilter = new FileFilter() {
-            public boolean accept(File file) {
-                return file.isFile();
+            directoryList = new ArrayList<File>();
+            directoryNames = new ArrayList<String>();
+            for (File file : tempDirectoryList) {
+                directoryList.add(file);
+                directoryNames.add(file.getName());
             }
-        };
-        FileFilter directoryFilter = new FileFilter(){
-            public boolean accept(File file){
-                return file.isDirectory();
+            ArrayAdapter<String> directoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, directoryNames);
+
+
+            //Lista de ficheros
+            File[] tempFileList = mainPath.listFiles(fileFilter);
+
+            if (tempFileList != null && tempFileList.length > 1) {
+                Arrays.sort(tempFileList, new Comparator<File>() {
+                    @Override
+                    public int compare(File object1, File object2) {
+                        return object1.getName().compareTo(object2.getName());
+                    }
+                });
             }
-        };
 
-        //if(mainPath.exists() && mainPath.length()>0){
-        //Lista de directorios
-        File[] tempDirectoryList = mainPath.listFiles(directoryFilter);
+            fileList = new ArrayList<File>();
+            fileNames = new ArrayList<String>();
+            for (File file : tempFileList) {
+                fileList.add(file);
+                fileNames.add(file.getName());
+            }
 
-        if (tempDirectoryList != null && tempDirectoryList.length > 1) {
-            Arrays.sort(tempDirectoryList, new Comparator<File>() {
-                @Override
-                public int compare(File object1, File object2) {
-                    return object1.getName().compareTo(object2.getName());
-                }
-            });
+
+            path.setText(mainPath.toString());
+            iconload();
+            setTitle(mainPath.getName());
+            //}
         }
 
-        directoryList = new ArrayList<File>();
-        directoryNames = new ArrayList<String>();
-        for(File file: tempDirectoryList){
-            directoryList.add(file);
-            directoryNames.add(file.getName());
+        /**
+         * @Override public boolean onCreateOptionsMenu(Menu menu) {
+         * getMenuInflater().inflate(R.menu.activity_file_selection, menu);
+         * return true;
+         * }
+         * @Override public boolean onOptionsItemSelected(MenuItem item) {
+         * switch (item.getItemId()) {
+         * case android.R.id.home:
+         * NavUtils.navigateUpFromSameTask(this);
+         * return true;
+         * }
+         * return super.onOptionsItemSelected(item);
+         * }*
+         */
+
+        public void iconload() {
+            String[] foldernames = new String[directoryNames.size()];
+            foldernames = directoryNames.toArray(foldernames);
+
+            String[] filenames = new String[fileNames.size()];
+            filenames = fileNames.toArray(filenames);
+
+            CustomListSingleOnly adapter1 = new CustomListSingleOnly(FileSelectionActivity.this, directoryNames.toArray(foldernames), mainPath.getPath());
+            CustomList adapter2 = new CustomList(FileSelectionActivity.this, fileNames.toArray(filenames), mainPath.getPath());
+
+
+            MergeAdapter adap = new MergeAdapter();
+
+            adap.addAdapter(adapter1);
+            adap.addAdapter(adapter2);
+
+
+            directoryView.setAdapter(adap);
         }
-        ArrayAdapter<String> directoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, directoryNames);
+
+        public void ExtStorageSearch() {
+            String[] extStorlocs = {"/storage/sdcard1", "/storage/extsdcard", "/storage/sdcard0/external_sdcard", "/mnt/extsdcard",
+                    "/mnt/sdcard/external_sd", "/mnt/external_sd", "/mnt/media_rw/sdcard1", "/removable/microsd", "/mnt/emmc",
+                    "/storage/external_SD", "/storage/ext_sd", "/storage/removable/sdcard1", "/data/sdext", "/data/sdext2",
+                    "/data/sdext3", "/data/sdext4", "/storage/sdcard0"};
+
+            //First Attempt
+            primary_sd = System.getenv("EXTERNAL_STORAGE");
+            secondary_sd = System.getenv("SECONDARY_STORAGE");
 
 
-        //Lista de ficheros
-        File[] tempFileList = mainPath.listFiles(fileFilter);
-
-        if (tempFileList != null && tempFileList.length > 1) {
-            Arrays.sort(tempFileList, new Comparator<File>() {
-                @Override
-                public int compare(File object1, File object2) {
-                    return object1.getName().compareTo(object2.getName());
-                }
-            });
-        }
-
-        fileList = new ArrayList<File>();
-        fileNames = new ArrayList<String>();
-        for(File file : tempFileList){
-            fileList.add(file);
-            fileNames.add(file.getName());
-        }
-
-
-
-        path.setText(mainPath.toString());
-        iconload();
-        setTitle(mainPath.getName());
-        //}
-    }
-
-    /**@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.activity_file_selection, menu);
-    return true;
-    }
-
-     @Override
-     public boolean onOptionsItemSelected(MenuItem item) {
-     switch (item.getItemId()) {
-     case android.R.id.home:
-     NavUtils.navigateUpFromSameTask(this);
-     return true;
-     }
-     return super.onOptionsItemSelected(item);
-     }**/
-
-    public void iconload(){
-        String[] foldernames = new String[directoryNames.size()];
-        foldernames = directoryNames.toArray(foldernames);
-
-        String[] filenames = new String[fileNames.size()];
-        filenames = fileNames.toArray(filenames);
-
-        CustomListSingleOnly adapter1 = new CustomListSingleOnly(FileSelectionActivity.this, directoryNames.toArray(foldernames), mainPath.getPath());
-        CustomList adapter2 = new CustomList(FileSelectionActivity.this, fileNames.toArray(filenames), mainPath.getPath());
-
-
-        MergeAdapter adap = new MergeAdapter();
-
-        adap.addAdapter(adapter1);
-        adap.addAdapter(adapter2);
-
-
-        directoryView.setAdapter(adap);
-    }
-
-    public void ExtStorageSearch(){
-        String[] extStorlocs = {"/storage/sdcard1","/storage/extsdcard","/storage/sdcard0/external_sdcard","/mnt/extsdcard",
-                "/mnt/sdcard/external_sd","/mnt/external_sd","/mnt/media_rw/sdcard1","/removable/microsd","/mnt/emmc",
-                "/storage/external_SD","/storage/ext_sd","/storage/removable/sdcard1","/data/sdext","/data/sdext2",
-                "/data/sdext3","/data/sdext4","/storage/sdcard0"};
-
-        //First Attempt
-        primary_sd = System.getenv("EXTERNAL_STORAGE");
-        secondary_sd = System.getenv("SECONDARY_STORAGE");
-
-
-        if(primary_sd == null) {
-            primary_sd = Environment.getExternalStorageDirectory()+"";
-        }
-        if(secondary_sd == null) {//if fail, search among known list of extStorage Locations
-            for(String string: extStorlocs){
-                if((new File(string)).exists() && (new File(string)).isDirectory() ){
-                    secondary_sd = string;
-                    break;
+            if (primary_sd == null) {
+                primary_sd = Environment.getExternalStorageDirectory() + "";
+            }
+            if (secondary_sd == null) {//if fail, search among known list of extStorage Locations
+                for (String string : extStorlocs) {
+                    if ((new File(string)).exists() && (new File(string)).isDirectory()) {
+                        secondary_sd = string;
+                        break;
+                    }
                 }
             }
+
         }
+
 
     }
 
-
-
-}
