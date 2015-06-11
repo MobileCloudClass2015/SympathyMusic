@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 /**
@@ -28,8 +29,8 @@ public class ModeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mode);
 
-        Button upload = (Button)findViewById(R.id.upload);
-        Button recomd = (Button)findViewById(R.id.recomd);
+        ImageButton upload = (ImageButton)findViewById(R.id.upload);
+        ImageButton recomd = (ImageButton)findViewById(R.id.recomd);
         Button video = (Button)findViewById(R.id.videobtn);
 
         upload.setOnClickListener(new Button.OnClickListener() {
