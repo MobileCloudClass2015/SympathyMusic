@@ -41,6 +41,7 @@ import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,10 +116,10 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
     boolean isPortrait =
         getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
+    //ArrayList<ArrayList<String>> list = (ArrayList<ArrayList<String>>) getIntent("exIntent"");
     listFragment.getView().setVisibility(isFullscreen ? View.GONE : View.VISIBLE);
     listFragment.setLabelVisibility(isPortrait);
     closeButton.setVisibility(isPortrait ? View.VISIBLE : View.GONE);
-
     if (isFullscreen) {
       videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
       setLayoutSize(videoFragment.getView(), MATCH_PARENT, MATCH_PARENT);
@@ -153,33 +154,38 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
         });
   }
 
-  /**
+    /**
    * A fragment that shows a static list of videos.
    */
   public static final class VideoListFragment extends ListFragment {
 
-    private static final List<VideoEntry> VIDEO_LIST;
-    static {
-      List<VideoEntry> list = new ArrayList<VideoEntry>();
-      list.add(new VideoEntry("test", "XA95jzOyA9w"));
-      list.add(new VideoEntry("GMail Tap", "1KhZKNZO8mQ"));
-      list.add(new VideoEntry("Chrome Multitask", "UiLSiqyDf4Y"));
-      list.add(new VideoEntry("Google Fiber", "re0VRK6ouwI"));
-      list.add(new VideoEntry("Autocompleter", "blB_X38YSxQ"));
-      list.add(new VideoEntry("GMail Motion", "Bu927_ul_X0"));
-      list.add(new VideoEntry("Translate for Animals", "3I24bSteJpw"));
-      VIDEO_LIST = Collections.unmodifiableList(list);
-    }
-
     private PageAdapter adapter;
     private View videoBox;
+      List<VideoEntry> list = new ArrayList<VideoEntry>();
+      List<VideoEntry> VIDEO_LIST;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      adapter = new PageAdapter(getActivity(), VIDEO_LIST);
-    }
 
+
+        try {
+            list.add(new VideoEntry(new String ("\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c".getBytes("8859_1"),"KSC5601"), "T_RqKsRLO74"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        list.add(new VideoEntry(" ", "RlzsgkoMbjo"));
+            list.add(new VideoEntry(" ", "WIeIwQwWWgI"));
+            list.add(new VideoEntry(" ", "K5FPbllu_GI"));
+            VIDEO_LIST = Collections.unmodifiableList(list);
+
+      adapter = new PageAdapter(getActivity(), VIDEO_LIST);
+
+    }
+    public void addlist(String arr1, String arr2){
+        list.add(new VideoEntry(arr1, arr2));
+
+    }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
       super.onActivityCreated(savedInstanceState);
