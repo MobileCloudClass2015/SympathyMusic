@@ -168,9 +168,9 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-
+        String string =
         try {
-            list.add(new VideoEntry(new String ("\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c".getBytes("8859_1"),"KSC5601"), "T_RqKsRLO74"));
+            list.add(new VideoEntry(new String ("\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c".getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
