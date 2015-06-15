@@ -213,9 +213,6 @@ public class FileSelectionActivity extends Activity implements UploadFileCallbac
             Log.d(TAG, "Nada seleccionado");
             finish();
         }
-        final String tempurl = mainPath.toString()+resultFileList.toString();
-        Toast.makeText(getApplicationContext(), fileList.toString(), Toast.LENGTH_LONG).show();
-        Log.d(TAG, fileList.toString());
 
 
 

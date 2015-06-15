@@ -169,15 +169,57 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
       super.onCreate(savedInstanceState);
 
 
+
         try {
-            list.add(new VideoEntry(new String ("\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c".getBytes("8859_1"),"KSC5601"), "T_RqKsRLO74"));
+
+            String string1 = "\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c";
+            byte[] convert = string1.getBytes("UTF-8");
+
+            string1 = new String(convert,"UTF-8");
+
+            list.add(new VideoEntry(string1, "T_RqKsRLO74"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        list.add(new VideoEntry(" ", "RlzsgkoMbjo"));
-            list.add(new VideoEntry(" ", "WIeIwQwWWgI"));
-            list.add(new VideoEntry(" ", "K5FPbllu_GI"));
-            VIDEO_LIST = Collections.unmodifiableList(list);
+
+        try {
+
+            String string1 = "\ubcf4\ud1b5\ub0a0";
+            byte[] convert = string1.getBytes("UTF-8");
+
+            string1 = new String(convert,"UTF-8");
+
+            list.add(new VideoEntry(string1, "MoWsInIpHXE"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+
+            String string1 = "\uc624\ub298\ub530\ub77c (Feat. \uac00\uc778)";
+            byte[] convert = string1.getBytes("UTF-8");
+
+            string1 = new String(convert,"UTF-8");
+
+            list.add(new VideoEntry(string1, "Pz05q_GeCnc"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+
+            String string1 = "\uc554\ub0b4 \uc81c\uac70\uc218\uc220 \ucd95\ud558\ud574";
+            byte[] convert = string1.getBytes("UTF-8");
+
+            string1 = new String(convert,"UTF-8");
+
+            list.add(new VideoEntry(string1, "K5FPbllu_GI"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        VIDEO_LIST = Collections.unmodifiableList(list);
 
       adapter = new PageAdapter(getActivity(), VIDEO_LIST);
 
