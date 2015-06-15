@@ -58,20 +58,20 @@
                 android:id="@+id/upload"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="50dp"
                 android:background="@drawable/btn_plus"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="2">
             
             <ImageButton
                 android:id="@+id/recomd"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="60dp"
                 android:background="@drawable/btn_recomd"/>
         </LinearLayout>
 

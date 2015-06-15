@@ -168,6 +168,7 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
+<<<<<<< HEAD
 
 
         try {
@@ -202,6 +203,11 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
             string1 = new String(convert,"UTF-8");
 
             list.add(new VideoEntry(string1, "Pz05q_GeCnc"));
+=======
+        String string =
+        try {
+            list.add(new VideoEntry(new String ("\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c".getBytes("UTF-8")));
+>>>>>>> 1d19e7569e0378413bbc5fdaf21b1d552421608f
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -101,7 +101,7 @@ def music_search(request):
 
 
 @csrf_exempt
-def music_upload(request):
+def music_upload2(request):
 	print "upload"
 	if request.method == 'POST':
 		if 'file' in request.FILES:
@@ -159,4 +159,22 @@ def music_upload(request):
 			retdict = json.dumps(retdict)				
 			return HttpResponse('File Uploaded')
 	return HttpResponse('Failed to Upload File')
+
+
+@csrf_exempt
+def music_upload(request):
+	print "upload"
+	if request.method == 'POST':
+		if 'file' in request.FILES:
+			file = request.FILES['file']
+			filename = file._name
+
+			fp = open('%s/%s' % ("upload", filename) , 'wb')
+
+			for chunk in file.chunks():
+				fp.write(chunk)
+			fp.close()	
+			return HttpResponse('File Uploaded')
+	return HttpResponse('Failed to Upload File')
+
 
