@@ -20,12 +20,25 @@ from testapp.views import music_recommend
 from testapp.views import music_upload
 from testapp.views import music_upload2
 from testapp.views import music_search
+from testapp.views import mate_recommend
+from testapp.views import mate_userplaylist
+from testapp.views import mate_materequest
+from testapp.views import mate_mymatelist
+from testapp.views import mate_myrequestlist
+from testapp.views import mate_requestagree
+from testapp.views import mate_requestreject
 
 urlpatterns = patterns('',
 	url(r'^Sympathy/user/register/$', user_register),
 	url(r'^Sympathy/music/recommend/$', music_recommend),
 	url(r'^Sympathy/music/upload/$', music_upload),
 	url(r'^Sympathy/music/upload2/$', music_upload2),
-	url(r'^Sympathy/music/search/$', music_search)
-
+	url(r'^Sympathy/music/search/$', music_search),
+	url(r'^Sympathy/mate/recommend/$', mate_recommend),
+	url(r'^Sympathy/mate/userplaylist/$', mate_userplaylist),
+	url(r'^Sympathy/mate/materequest/$', mate_materequest)
+	url(r'^Sympathy/mate/materequest/$', mate_mymatelist)
+	url(r'^Sympathy/mate/materequest/$', mate_myrequestlist)
+	url(r'^Sympathy/mate/materequest/$', mate_requestagree)
+	url(r'^Sympathy/mate/materequest/$', mate_requestreject)
 )
