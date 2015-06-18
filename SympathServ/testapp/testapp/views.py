@@ -333,14 +333,14 @@ def mate_recommend(request):
 		global user_musiclist
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
-		my_list = user_musiclist[user_id]
+		my_list = user_musiclist[user_id] # user_id's mate list
 		similar_list = []
-		for mate_id in user_musiclist:
-			if mate_id != user_id:
-				mate_list = user_musiclist[mate_id]
+		for mate_id in user_musiclist: # all playlist check
+			if mate_id != user_id: # only user_id's playlist skip
+				play_list = user_musiclist[mate_id] #
 				sumvalue = 0
 				for i in range(len(my_list)):
-					value = my_list[i] - mate_list[i]
+					value = my_list[i] - play_list[i]
 					value = value*value
 					sumvalue = sumvalue + value
 				similar = 1 / (1 + sumvalue)
