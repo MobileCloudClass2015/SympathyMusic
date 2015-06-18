@@ -50,10 +50,10 @@ class SimilarList:
 
 class SearchList:
 	def getSearchList(self):
-		return json.dumps(self.musicList)
+		return json.dumps(self.trackList)
 
 	def setSearchList(self, similarList):
-		self.musicList = {"tracks": []}
+		self.trackList = {"tracks": []}
 
 		global bonacellURL
 		url = bonacellURL + "music/search"
@@ -74,9 +74,9 @@ class SearchList:
 			response = urllib2.urlopen(url, requestData)
 			response = json.loads(response.read())
 			trackInfo["url"] = response["tracks"][0]["url"]
-			self.musicList["tracks"].append(trackInfo)
+			self.trackList["tracks"].append(trackInfo)
 
- #['url1', 'url2', 'url3','url4', 'url5']
+# trackList = {"tracks": [{"artist": "...", "title": "...", "url": "..."}, {}, {}, {}, {}]}'''
 
 
 mate_list = {}
@@ -274,9 +274,9 @@ def music_upload(request):
 			searchList = SearchList()
 			searchList.setSearchList(sl)
 
-			musicList = searchList.getSearchList() # artist, title and youtube url list
+			trackList = searchList.getSearchList() # artist, title and youtube url list
 
-			return HttpResponse(musicList)
+			return HttpResponse(trackList)
 
 	return HttpResponse('Failed to Upload File')
 
