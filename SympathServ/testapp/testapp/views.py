@@ -2,8 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
-import urllib2
-import urllib
+import urllib2, urllib
 import json
 import subprocess
 import sys
@@ -13,61 +12,67 @@ sys.setdefaultencoding('utf-8')
 
 bonacellURL = 'http://52.68.55.182/soundnerd/'
 
+class Data():
+	def getData(self):
+		return self.data # return dictionary type data
+
+	def setData(self, userID = "", trackID = "", artist = "", title = "", start = 0, count = 0, feature = ""):
+		self.data = {}
+		self.data["userID"] = userID
+		self.data["trackID"] = trackID
+		self.data["artist"] = artist
+		self.data["title"] = title
+		self.data["start"] = start
+		self.data["count"] = count
+		self.data["feature"] = feature
+
 class SimilarList:
-	def __init__(self, count):
-		self.count = count
+	def getSimilarList(self):
+		return self.similarList # [{"artist": "exid", "title": "whoz that girl", "track_id"}, {...}, [...}, {...}, {...}]
 
-	def getLength(self):
-		return self.count
+	def setSimilarList(self, data):
+		self.similarList = []
 
-	def getMusicList(self):
-		return self.musicList
-
-	def setMusicList(self, feature):
-		self.musicList = []
 		global bonacellURL
+		url = bonacellURL + "music/similar"
 
-		url = bonacellURL+"music/similar"
-		feature = urllib.quote_plus(feature)
-		data = {'feature': feature, 'count': self.count}
-		data = "data=" + json.dumps(data)
-		f = urllib2.urlopen(url, data)
-		response = json.loads(f.read())
+		requestData = {"feature": data.get("feature"), "count": data.get("count")}
+		requestData = "data=" + json.dumps(requestData)
+		response = urllib2.urlopen(url, requestData)
+		response = json.loads(response.read())
 
-		for i in range(0, self.count):
-			sm = dict()
-			sm['artist'] = response['tracks'][i]['artist']
-			sm['title'] = response['tracks'][i]['title']
-			sm['track_id'] = response['tracks'][i]['track_id']
-			self.musicList.append(sm)
+		for i in range(0, data.get("count")):
+			temp = {}
+			temp["artist"] = response["tracks"][i]["artist"]
+			temp["title"] = response["tracks"][i]["title"]
+			temp["track_id"] = response["tracks"][i]["track_id"]
+			self.similarList.append(temp)
 
 class SearchList:
-	def __init__(self):
-		return
-
-	def getUrlList(self):
+	def getSearchList(self):
 		return json.dumps(self.urlList)
 
-	def setUrlList(self, musiclist): #[{'artist': 'a', 'title' : '1', 'track_id' : 'k'},{},{},{},{}]
-		self.urlList = {'url' : []}
+	def setSearchList(self, similarList):
+		self.urlList = []
 
 		global bonacellURL
+		url = bonacellURL + "music/search"
 
-		url = bonacellURL+"music/search"
-		ml = musiclist
-		for i in range(0, len(ml)):
-			artist = str(unicode(ml[i]['artist']))
-			title = str(unicode(ml[i]['title']))
+		#similarList = [{"artist": "exid", "title": "whoz that girl", "track_id"}, {...}, [...}, {...}, {...}]
+		
+		for i in range(0, len(similarList)):
+			artist = str(unicode(similarList[i]["artist"]))
+			title = str(unicode(similarList[i]["title"]))
 			artist = artist.split(",")[0]
 			title = title.split(" (")[0]
 			artist = urllib.quote_plus(artist)
 			title = urllib.quote_plus(title)
 			
-			data = {"artist": artist,  "title": title, "start": 0, "count": 1}
-			data = 'data=' + json.dumps(data)
-			f = urllib2.urlopen(url, data)
-			response = json.loads(f.read())
-			self.urlList['url'].append(response["tracks"][0]['url'])
+			requestData = {"artist": artist,  "title": title, "start": 0, "count": 1} # one url per one song
+			requestData = "data=" + json.dumps(requestData)
+			response = urllib2.urlopen(url, requestData)
+			response = json.loads(response.read())
+			self.urlList.append(response["tracks"][0]["url"])
 
  #['url1', 'url2', 'url3','url4', 'url5']
 
@@ -240,24 +245,29 @@ def music_upload(request):
 			for chunk in file.chunks():
 				fp.write(chunk)
 			fp.close()
-			filename = "upload/"+filename
-			featurename = "featuredata/"+"feature.txt"
+
+			filename = "upload/" + filename
+			featurename = "featuredata/" + "feature.txt"
 			subprocess.call(["./extract", filename, featurename])
-			source = open(featurename, 'r')
+			featuresource = open(featurename, 'r')
 
-			data = source.read().split('\n')
-			data = ''.join(data)
+			feature = featuresource.read().split('\n')
+			feature = ''.join(feature)
 
-			source.close()
+			featuresource.close()
 
-			similarlist = SimilarList(5)
-			similarlist.setMusicList(data)
-			musiclist = similarlist.getMusicList()
+			data = Data()
+			data.setData(start = 0, count = 5, feature = feature)
+			inputdata = data.getData()
 
+			similarList = SimilarList()
+			similarList.setSimilarList(inputdata)
+			sl = similarList.getSimilarList()
 
-			searchlist = SearchList()
-			searchlist.setUrlList(musiclist)
-			urlList = searchlist.getUrlList()
+			searchList = SearchList()
+			searchList.setSearchList(sl)
+
+			urlList = searchList.getSearchList()
 
 			return HttpResponse(urlList)
 
