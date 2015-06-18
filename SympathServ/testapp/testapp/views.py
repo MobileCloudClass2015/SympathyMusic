@@ -85,7 +85,12 @@ list_mapping = {}
 lcount = 0
 
 def mycmp(a1, a2):
-	return a1["val"] - a2["val"]	
+	if a1["val"] < a2["val"]:
+		return 1
+	elif a1["val"] > a2["val"]:
+		return -1
+	else:
+		return 0
 
 
 @csrf_exempt
