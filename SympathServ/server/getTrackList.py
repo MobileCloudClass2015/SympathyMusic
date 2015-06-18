@@ -92,7 +92,14 @@ def main():
 
 	trackList = searchList.getSearchList() # artist, title and youtube url list
 
-	print trackList
+	trackList = json.loads(trackList)
+	print json.dumps(trackList, ensure_ascii = False, indent = 4, sort_keys = True)
+
+	# check return value type
+	#trackList = json.loads(trackList)
+	#print type(trackList["tracks"][0]["artist"])
+	#print type(trackList["tracks"][0]["title"])
+	#print type(trackList["tracks"][0]["url"])
 
 if __name__ == "__main__":
 	main()
