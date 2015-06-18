@@ -36,12 +36,12 @@ class SimilarList:
 		global bonacellURL
 		url = bonacellURL + "music/similar"
 
-		requestData = {"feature": data.get("feature"), "count": data.get("count")}
+		requestData = {"feature": urllib.quote_plus(data["feature"]), "count": data["count"]}
 		requestData = "data=" + json.dumps(requestData)
 		response = urllib2.urlopen(url, requestData)
 		response = json.loads(response.read())
 
-		for i in range(0, data.get("count")):
+		for i in range(0, len(response["tracks"])):
 			temp = {}
 			temp["artist"] = response["tracks"][i]["artist"]
 			temp["title"] = response["tracks"][i]["title"]
@@ -53,7 +53,7 @@ class SearchList:
 		return json.dumps(self.urlList)
 
 	def setSearchList(self, similarList):
-		self.urlList = []
+		self.urlList = {'url' : []}
 
 		global bonacellURL
 		url = bonacellURL + "music/search"
@@ -72,7 +72,7 @@ class SearchList:
 			requestData = "data=" + json.dumps(requestData)
 			response = urllib2.urlopen(url, requestData)
 			response = json.loads(response.read())
-			self.urlList.append(response["tracks"][0]["url"])
+			self.urlList['url'].append(response["tracks"][0]["url"])
 
  #['url1', 'url2', 'url3','url4', 'url5']
 
