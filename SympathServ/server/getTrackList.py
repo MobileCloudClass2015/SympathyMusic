@@ -47,10 +47,10 @@ class SimilarList:
 
 class SearchList:
 	def getSearchList(self):
-		return json.dumps(self.musicList)
+		return json.dumps(self.trackList)
 
 	def setSearchList(self, similarList):
-		self.musicList = {"tracks": []}
+		self.trackList = {"tracks": []}
 
 		global bonacellURL
 		url = bonacellURL + "music/search"
@@ -71,7 +71,7 @@ class SearchList:
 			response = urllib2.urlopen(url, requestData)
 			response = json.loads(response.read())
 			trackInfo["url"] = response["tracks"][0]["url"]
-			self.musicList["tracks"].append(trackInfo)
+			self.trackList["tracks"].append(trackInfo)
 
 def main():
 	featureData = open("feature.txt", 'r').read()
@@ -90,9 +90,9 @@ def main():
 	searchList = SearchList()
 	searchList.setSearchList(sl)
 
-	musicList = searchList.getSearchList() # artist, title and youtube url list
+	trackList = searchList.getSearchList() # artist, title and youtube url list
 
-	print musicList
+	print trackList
 
 if __name__ == "__main__":
 	main()

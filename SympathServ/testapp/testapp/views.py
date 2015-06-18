@@ -50,29 +50,31 @@ class SimilarList:
 
 class SearchList:
 	def getSearchList(self):
-		return json.dumps(self.urlList)
+		return json.dumps(self.musicList)
 
 	def setSearchList(self, similarList):
-		self.urlList = {'url' : []}
+		self.musicList = {"tracks": []}
 
 		global bonacellURL
 		url = bonacellURL + "music/search"
 
 		#similarList = [{"artist": "exid", "title": "whoz that girl", "track_id"}, {...}, [...}, {...}, {...}]
-		
+
 		for i in range(0, len(similarList)):
-			artist = str(unicode(similarList[i]["artist"]))
-			title = str(unicode(similarList[i]["title"]))
-			artist = artist.split(",")[0]
-			title = title.split(" (")[0]
+			trackInfo = {}
+			trackInfo["artist"] = str(unicode(similarList[i]["artist"]))
+			trackInfo["title"] = str(unicode(similarList[i]["title"]))
+			artist = trackInfo["artist"].split(",")[0]
+			title = trackInfo["title"].split(" (")[0]
 			artist = urllib.quote_plus(artist)
 			title = urllib.quote_plus(title)
 			
-			requestData = {"artist": artist,  "title": title, "start": 0, "count": 1} # one url per one song
+			requestData = {"artist": artist,  "title": title, "start": 0, "count": 1} # one url per one track
 			requestData = "data=" + json.dumps(requestData)
 			response = urllib2.urlopen(url, requestData)
 			response = json.loads(response.read())
-			self.urlList['url'].append(response["tracks"][0]["url"])
+			trackInfo["url"] = response["tracks"][0]["url"]
+			self.musicList["tracks"].append(trackInfo)
 
  #['url1', 'url2', 'url3','url4', 'url5']
 
@@ -268,13 +270,13 @@ def music_upload(request):
 			similarList.setSimilarList(inputdata)
 			sl = similarList.getSimilarList() # "artist" and "title" data
 
-			# search api call and get youtube url
+			# search api call and get artist, title and youtube url
 			searchList = SearchList()
 			searchList.setSearchList(sl)
 
-			urlList = searchList.getSearchList() # youtube url list
+			musicList = searchList.getSearchList() # artist, title and youtube url list
 
-			return HttpResponse(urlList)
+			return HttpResponse(musicList)
 
 	return HttpResponse('Failed to Upload File')
 
