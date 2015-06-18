@@ -80,6 +80,9 @@ class SearchList:
 
 
 mate_list = {}
+user_musiclist = {}
+list_mapping = {}
+lcount = 0
 
 @csrf_exempt
 def music_recommend(request):
@@ -239,6 +242,9 @@ def music_upload(request):
 	print "upload"
 	if request.method == 'POST':
 		if 'file' in request.FILES:
+			global user_musiclist
+			global list_mapping
+			global lcount
 			file = request.FILES['file']
 			filename = file._name
 
@@ -248,6 +254,8 @@ def music_upload(request):
 				fp.write(chunk)
 			fp.close()
 
+			user_id = request.POST['user_id']
+	
 			# extract feature from mp3
 			filename = "upload/" + filename
 			featurename = "featuredata/" + "feature.txt"
@@ -276,6 +284,25 @@ def music_upload(request):
 
 			trackList = searchList.getSearchList() # artist, title and youtube url list
 
+			listjson = json.loads(trackList)
+
+			if not (user_id in user_musiclist):
+				user_musiclist[user_id] = []
+				for i in range(lcount):
+					user_musiclist[user_id].append(0)
+
+			for elm in listjson["tracks"]:
+				l_title = elm["title"]
+				if not(l_title in list_mapping): #new title
+					list_mapping[l_title] = lcount
+					lcount = lcount + 1
+					for member in user_musiclist:
+						user_musiclist[member].append(0)
+				music_number = list_mapping[l_title]
+				cnt = user_musiclist[user_id][music_number]
+				if cnt < 5:
+					user_musiclist[user_id][music_number] = cnt + 1
+
 			return HttpResponse(trackList)
 
 	return HttpResponse('Failed to Upload File')
@@ -292,6 +319,39 @@ def music_upload(request):
 
 @csrf_exempt
 def mate_recommend(request):
+	print "mate recommend"
+	if request.method == 'POST':
+		global user_musiclist
+		postdata = request.POST['data']
+		user_id = json.loads(postdata)['user_id']
+		my_list = user_musiclist[user_id]
+		similar_list = []
+		for mate_id in user_musiclist:
+			if mate_id != user_id:
+				mate_list = user_musiclist[mate_id]
+				sumvalue = 0
+				for i in range(len(my_list)):
+					value = my_list[i] - mate_list[i]
+					value = value*value
+					sumvalue = sumvalue + value
+				similar = 1 / (1 + sumvalue)
+				udict = {}
+				udict["mid"] = mate_id
+				udict["val"] = similar
+				similar_list.append(udict)
+
+		similar_list.sort(mycmp)
+
+		mate_dict = {"mate_id" : []}
+		cnt = 0
+		for el in similar_list:
+			mate_dict["mate_id"].append(el["mid"])
+			cnt = cnt + 1
+			if cnt > 5:
+				break
+
+		mate_dict = json.dumps(mate_dict)
+		return HttpResponse(mate_dict)
 	return
 
 
