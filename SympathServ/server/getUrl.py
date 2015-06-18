@@ -7,13 +7,13 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-bonacellURL = "http://52.68.55.182/soundnerd"
+bonacellURL = "http://52.68.55.182/soundnerd/"
 
 class Data():
 	def getData(self):
 		return self.data # return dictionary type data
 
-	def setData(self, userID = "", trackID = "", artist = "", title = "", start = 0, count = 0, featureFilename = ""):
+	def setData(self, userID = "", trackID = "", artist = "", title = "", start = 0, count = 0, feature = ""):
 		self.data = {}
 		self.data["userID"] = userID
 		self.data["trackID"] = trackID
@@ -21,7 +21,7 @@ class Data():
 		self.data["title"] = title
 		self.data["start"] = start
 		self.data["count"] = count
-		self.data["feature"] = urllib.quote_plus(open(featureFilename, 'r').read())
+		self.data["feature"] = feature
 
 class SimilarList:
 	def getSimilarList(self):
@@ -31,14 +31,14 @@ class SimilarList:
 		self.similarList = []
 
 		global bonacellURL
-		url = bonacellURL + "/music/similar"
+		url = bonacellURL + "music/similar"
 
-		requestData = {"feature": data.get("feature"), "count": data.get("count")}
+		requestData = {"feature": urllib.quote_plus(data["feature"]), "count": data["count"]}
 		requestData = "data=" + json.dumps(requestData)
 		response = urllib2.urlopen(url, requestData)
 		response = json.loads(response.read())
 
-		for i in range(0, data.get("count")):
+		for i in range(0, len(response["tracks"])):
 			temp = {}
 			temp["artist"] = response["tracks"][i]["artist"]
 			temp["title"] = response["tracks"][i]["title"]
@@ -47,44 +47,52 @@ class SimilarList:
 
 class SearchList:
 	def getSearchList(self):
-		return json.dumps(self.urlList)
+		return json.dumps(self.musicList)
 
 	def setSearchList(self, similarList):
-		self.urlList = []
+		self.musicList = {"tracks": []}
 
 		global bonacellURL
-		url = bonacellURL + "/music/search"
+		url = bonacellURL + "music/search"
 
 		#similarList = [{"artist": "exid", "title": "whoz that girl", "track_id"}, {...}, [...}, {...}, {...}]
-		
+
 		for i in range(0, len(similarList)):
-			artist = str(unicode(similarList[i]["artist"]))
-			title = str(unicode(similarList[i]["title"]))
-			artist = artist.split(",")[0]
-			title = title.split(" (")[0]
+			trackInfo = {}
+			trackInfo["artist"] = str(unicode(similarList[i]["artist"]))
+			trackInfo["title"] = str(unicode(similarList[i]["title"]))
+			artist = trackInfo["artist"].split(",")[0]
+			title = trackInfo["title"].split(" (")[0]
 			artist = urllib.quote_plus(artist)
 			title = urllib.quote_plus(title)
 			
-			requestData = {"artist": artist,  "title": title, "start": 0, "count": 1} # one url per one song
+			requestData = {"artist": artist,  "title": title, "start": 0, "count": 1} # one url per one track
 			requestData = "data=" + json.dumps(requestData)
 			response = urllib2.urlopen(url, requestData)
 			response = json.loads(response.read())
-			self.urlList.append(response["tracks"][0]["url"])
+			trackInfo["url"] = response["tracks"][0]["url"]
+			self.musicList["tracks"].append(trackInfo)
 
 def main():
-	data = Data()
-	data.setData(start = 0, count = 5, featureFilename = "feature.txt")
-	d = data.getData()
-	
-	similarList = SimilarList()
-	similarList.setSimilarList(d) # data.getData() = {"userID": "", "trackID": "", "artist": "", "title": "", "start": 0, "count": 5, "feature": "..."}
-	sl = similarList.getSimilarList()
+	featureData = open("feature.txt", 'r').read()
 
+	# make data class
+	data = Data()
+	data.setData(start = 0, count = 5, feature = featureData)
+	inputdata = data.getData()
+
+	# similar api call and get "artist" and "title" data
+	similarList = SimilarList()
+	similarList.setSimilarList(inputdata)
+	sl = similarList.getSimilarList() # "artist" and "title" data
+
+	# search api call and get artist, title and youtube url
 	searchList = SearchList()
 	searchList.setSearchList(sl)
-	urlList = searchList.getSearchList()
 
-	print urlList
+	musicList = searchList.getSearchList() # artist, title and youtube url list
+
+	print musicList
 
 if __name__ == "__main__":
 	main()
