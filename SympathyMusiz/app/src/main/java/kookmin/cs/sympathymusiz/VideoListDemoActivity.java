@@ -19,8 +19,10 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,10 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -73,17 +79,27 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
   private View closeButton;
 
   private boolean isFullscreen;
+    public static final String FRAGMENT_KEY = "CUSTOM_TEXT";
+    public static String receiveUrl;
+
+
+
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    Intent intent = getIntent();
+      receiveUrl  = intent.getExtras().getString("url");
+
+
     setContentView(R.layout.video_list_demo);
 
-    listFragment = (VideoListFragment) getFragmentManager().findFragmentById(R.id.list_fragment);
+      listFragment = (VideoListFragment) getFragmentManager().findFragmentById(R.id.list_fragment);
+
     videoFragment =
         (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
-
     videoBox = findViewById(R.id.video_box);
     closeButton = findViewById(R.id.close_button);
 
@@ -91,6 +107,8 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
 
     layout();
   }
+
+
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
@@ -168,9 +186,55 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-<<<<<<< HEAD
+
+        JSONObject object = null;
+        try {
+            object = new JSONObject(receiveUrl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray Array = null;
+        try {
+            Array = new JSONArray(object.getString("tracks"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        for (int i=0; i< Array.length(); i++)
+        {
+            JSONObject insideObject = null;
+            try {
+                insideObject = Array.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                String title = insideObject.getString("title");
+                String artist = insideObject.getString("artist");
+                String temp = insideObject.getString("url");
+                Log.d("test", temp );
+                String url;
+                url = temp.substring(32,temp.length());
+
+                Log.d("test", url );
+                try {
+                    byte[] convert = title.getBytes("UTF-8");
+                    title = new String(convert,"UTF-8");
+                    convert = artist.getBytes("UTF-8");
+                    artist = new String(convert,"UTF-8");
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                list.add(new VideoEntry(title + "-" + artist, url));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
 
+
+
+/*
         try {
 
             String string1 = "\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c";
@@ -203,34 +267,18 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
             string1 = new String(convert,"UTF-8");
 
             list.add(new VideoEntry(string1, "Pz05q_GeCnc"));
-=======
-        String string =
-        try {
-            list.add(new VideoEntry(new String ("\ub3cc\uc544\uc640\uc918 \ub0b4\uac8c".getBytes("UTF-8")));
->>>>>>> 1d19e7569e0378413bbc5fdaf21b1d552421608f
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-
-        try {
-
-            String string1 = "\uc554\ub0b4 \uc81c\uac70\uc218\uc220 \ucd95\ud558\ud574";
-            byte[] convert = string1.getBytes("UTF-8");
-
-            string1 = new String(convert,"UTF-8");
-
-            list.add(new VideoEntry(string1, "K5FPbllu_GI"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
+           */
         VIDEO_LIST = Collections.unmodifiableList(list);
 
       adapter = new PageAdapter(getActivity(), VIDEO_LIST);
 
     }
-    public void addlist(String arr1, String arr2){
+      public void addlist(String arr1, String arr2){
         list.add(new VideoEntry(arr1, arr2));
 
     }
@@ -337,6 +385,8 @@ public final class VideoListDemoActivity extends Activity implements OnFullscree
     public View getView(int position, View convertView, ViewGroup parent) {
       View view = convertView;
       VideoEntry entry = entries.get(position);
+
+
 
       // There are three cases here
       if (view == null) {

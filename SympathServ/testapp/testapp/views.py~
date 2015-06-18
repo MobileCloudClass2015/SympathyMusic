@@ -84,6 +84,10 @@ user_musiclist = {}
 list_mapping = {}
 lcount = 0
 
+def mycmp(a1, a2):
+	return a1["val"] - a2["val"]	
+
+
 @csrf_exempt
 def music_recommend(request):
 	if request.method == 'POST':
