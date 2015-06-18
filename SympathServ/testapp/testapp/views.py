@@ -79,10 +79,10 @@ class SearchList:
 # trackList = {"tracks": [{"artist": "...", "title": "...", "url": "..."}, {}, {}, {}, {}]}'''
 
 
-mate_list = {}
-user_musiclist = {}
-list_mapping = {}
-lcount = 0
+mate_list = {} # mate request list
+user_musiclist = {} # user playlist
+list_mapping = {} # music-number mapping
+lcount = 0 # the number of recommended music
 
 @csrf_exempt
 def music_recommend(request):
