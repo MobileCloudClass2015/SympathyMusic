@@ -36,9 +36,9 @@ urlpatterns = patterns('',
 	url(r'^Sympathy/music/search/$', music_search),
 	url(r'^Sympathy/mate/recommend/$', mate_recommend),
 	url(r'^Sympathy/mate/userplaylist/$', mate_userplaylist),
-	url(r'^Sympathy/mate/materequest/$', mate_materequest)
-	url(r'^Sympathy/mate/materequest/$', mate_mymatelist)
-	url(r'^Sympathy/mate/materequest/$', mate_myrequestlist)
-	url(r'^Sympathy/mate/materequest/$', mate_requestagree)
+	url(r'^Sympathy/mate/materequest/$', mate_materequest),
+	url(r'^Sympathy/mate/materequest/$', mate_mymatelist),
+	url(r'^Sympathy/mate/materequest/$', mate_myrequestlist),
+	url(r'^Sympathy/mate/materequest/$', mate_requestagree),
 	url(r'^Sympathy/mate/materequest/$', mate_requestreject)
 )

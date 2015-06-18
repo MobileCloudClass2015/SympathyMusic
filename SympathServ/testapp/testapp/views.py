@@ -3,9 +3,73 @@ from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 import urllib2
+import urllib
 import json
+import subprocess
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 bonacellURL = 'http://52.68.55.182/soundnerd/'
+
+class SimilarList:
+	def __init__(self, count):
+		self.count = count
+
+	def getLength(self):
+		return self.count
+
+	def getMusicList(self):
+		return self.musicList
+
+	def setMusicList(self, feature):
+		self.musicList = []
+		global bonacellURL
+
+		url = bonacellURL+"music/similar"
+		feature = urllib.quote_plus(feature)
+		data = {'feature': feature, 'count': self.count}
+		data = "data=" + json.dumps(data)
+		f = urllib2.urlopen(url, data)
+		response = json.loads(f.read())
+
+		for i in range(0, self.count):
+			sm = dict()
+			sm['artist'] = response['tracks'][i]['artist']
+			sm['title'] = response['tracks'][i]['title']
+			sm['track_id'] = response['tracks'][i]['track_id']
+			self.musicList.append(sm)
+
+class SearchList:
+	def __init__(self):
+		return
+
+	def getUrlList(self):
+		return json.dumps(self.urlList)
+
+	def setUrlList(self, musiclist): #[{'artist': 'a', 'title' : '1', 'track_id' : 'k'},{},{},{},{}]
+		self.urlList = {'url' : []}
+
+		global bonacellURL
+
+		url = bonacellURL+"music/search"
+		ml = musiclist
+		for i in range(0, len(ml)):
+			artist = str(unicode(ml[i]['artist']))
+			title = str(unicode(ml[i]['title']))
+			artist = artist.split(",")[0]
+			title = title.split(" (")[0]
+			artist = urllib.quote_plus(artist)
+			title = urllib.quote_plus(title)
+			
+			data = {"artist": artist,  "title": title, "start": 0, "count": 1}
+			data = 'data=' + json.dumps(data)
+			f = urllib2.urlopen(url, data)
+			response = json.loads(f.read())
+			self.urlList['url'].append(response["tracks"][0]['url'])
+
+ #['url1', 'url2', 'url3','url4', 'url5']
 
 
 mate_list = {}
@@ -33,7 +97,7 @@ def music_recommend(request):
 		return HttpResponseNotFound()
 
 
-@csrf_exempt
+@csrf_exempt #finish
 def user_register(request):  #client 2 server login
 	if request.method == 'POST':
 		jsonstr = request.POST['data']
@@ -175,8 +239,28 @@ def music_upload(request):
 
 			for chunk in file.chunks():
 				fp.write(chunk)
-			fp.close()	
-			return HttpResponse('File Uploaded')
+			fp.close()
+			filename = "upload/"+filename
+			featurename = "featuredata/"+"feature.txt"
+			subprocess.call(["./extract", filename, featurename])
+			source = open(featurename, 'r')
+
+			data = source.read().split('\n')
+			data = ''.join(data)
+
+			source.close()
+
+			similarlist = SimilarList(5)
+			similarlist.setMusicList(data)
+			musiclist = similarlist.getMusicList()
+
+
+			searchlist = SearchList()
+			searchlist.setUrlList(musiclist)
+			urlList = searchlist.getUrlList()
+
+			return HttpResponse(urlList)
+
 	return HttpResponse('Failed to Upload File')
 
 
