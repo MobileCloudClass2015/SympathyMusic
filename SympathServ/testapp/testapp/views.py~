@@ -85,7 +85,12 @@ list_mapping = {}
 lcount = 0
 
 def mycmp(a1, a2):
-	return a1["val"] - a2["val"]	
+	if a1["val"] < a2["val"]:
+		return 1
+	elif a1["val"] > a2["val"]:
+		return -1
+	else:
+		return 0
 
 
 @csrf_exempt
@@ -349,7 +354,7 @@ def mate_recommend(request):
 		mate_dict = {"mate_id" : []}
 		cnt = 0
 		for el in similar_list:
-			mate_dict["mate_id"].append(el["mid"])
+			mate_dict["mate_id"].append({'id' : el["mid"]})
 			cnt = cnt + 1
 			if cnt > 5:
 				break
@@ -373,14 +378,12 @@ def mate_materequest(request): #mate request
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
 		
-		if not(user_id in mate_list):
-			mate_list[user_id] = []
+		if not(mate_id in mate_list):
+			mate_list[mate_id] = []
 		
-		if not (mate_id in mate_list[user_id]):
-			mate_list[user_id].append(mate_id)
+		if not (user_id in mate_list[mate_id]):
+			mate_list[mate_id].append(user_id)
 		return HttpResponse('mate request success')
-
-
 
 
 ##########################friend list
@@ -396,7 +399,7 @@ def mate_mymatelist(request): #mate request
 		count = 5
 
 		request = {}
-		request['user_id'] = user_id
+		request['user_id'] = urllib.quote_plus(user_id)
 		request['start'] = start
 		request['count'] = count
 
@@ -411,9 +414,9 @@ def mate_mymatelist(request): #mate request
 		retdict = {'mate_id': [], 'count': 0}
 
 
-		for mate_id in retdata['mates']:
+		for i in retdata['mates']:
 			retdict['count'] = retdict['count'] + 1
-			retdict['mate_id'].append(mate_id)
+			retdict['mate_id'].append({'id' : retdata['mates'][i]['user_id']})
 
 		retdict = json.dumps(retdict)			
 		return HttpResponse(retdict)
@@ -429,14 +432,13 @@ def mate_myrequestlist(request): #mate request
 
 		retdict = {'mate_id': [], 'count': 0}
 		if user_id in mate_list:
-			for mate_id in mate_list['user_id']:
+			for mate_id in mate_list[user_id]:
 				retdict['count'] = retdict['count'] + 1
-				retdict['mate_id'].append(mate_id)
+				retdict['mate_id'].append({'id' :mate_id})
 		retdict = json.dumps(retdict)
 		return HttpResponse(retdict)
 
-		
-
+	
 @csrf_exempt #finish
 def mate_requestagree(request): #mate request
 	print "mate_requestagree"
@@ -449,8 +451,8 @@ def mate_requestagree(request): #mate request
 		mate_list[user_id].remove(mate_id)
 
 		request = {}
-		request['mating_user_id'] = user_id
-		request['mated_user_id'] = mate_id
+		request['mating_user_id'] = urllib.quote_plus(user_id)
+		request['mated_user_id'] = urllib.quote_plus(mate_id)
 
 
 		request = json.dumps(request)
