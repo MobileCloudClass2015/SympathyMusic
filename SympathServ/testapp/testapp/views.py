@@ -246,28 +246,33 @@ def music_upload(request):
 				fp.write(chunk)
 			fp.close()
 
+			# extract feature from mp3
 			filename = "upload/" + filename
 			featurename = "featuredata/" + "feature.txt"
-			subprocess.call(["./extract", filename, featurename])
+			subprocess.call(["./extract", filename, featurename]) # extract
+			
+			# remove "\n" in feature string
 			featuresource = open(featurename, 'r')
-
 			feature = featuresource.read().split('\n')
 			feature = ''.join(feature)
 
 			featuresource.close()
 
+			# make data class 
 			data = Data()
 			data.setData(start = 0, count = 5, feature = feature)
 			inputdata = data.getData()
 
+			# similar api call and get "artist" and "title" data
 			similarList = SimilarList()
 			similarList.setSimilarList(inputdata)
-			sl = similarList.getSimilarList()
+			sl = similarList.getSimilarList() # "artist" and "title" data
 
+			# search api call and get youtube url
 			searchList = SearchList()
 			searchList.setSearchList(sl)
 
-			urlList = searchList.getSearchList()
+			urlList = searchList.getSearchList() # youtube url list
 
 			return HttpResponse(urlList)
 
