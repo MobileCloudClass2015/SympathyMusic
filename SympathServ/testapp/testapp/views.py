@@ -333,30 +333,30 @@ def mate_recommend(request):
 		global user_musiclist
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
-		my_list = user_musiclist[user_id] # user_id's mate list
-		similar_list = []
+		my_list = user_musiclist[user_id] # user_id's playlist
+		similar_list = [] # [{"mid": mate_id, "val": similar}, {...}, {...}, ..., {...}]
 		for mate_id in user_musiclist: # all playlist check
 			if mate_id != user_id: # only user_id's playlist skip
-				play_list = user_musiclist[mate_id] #
-				sumvalue = 0
-				for i in range(len(my_list)):
+				play_list = user_musiclist[mate_id] # get mate_id's playlist
+				sumvalue = 0 # distance between user_id and mate_id
+				for i in range(len(my_list)): # calculate distance
 					value = my_list[i] - play_list[i]
 					value = value*value
 					sumvalue = sumvalue + value
-				similar = 1 / (1 + sumvalue)
-				udict = {}
+				similar = 1 / (1 + sumvalue) # similar rate based on distance
+				udict = {} # dictionary having mate_id and similar rate
 				udict["mid"] = mate_id
 				udict["val"] = similar
 				similar_list.append(udict)
 
-		similar_list.sort(mycmp)
+		similar_list.sort(mycmp) # sorting based on similar
 
-		mate_dict = {"mate_id" : []}
+		mate_dict = {"mate_id" : []} # {"mate_id": [ {"id": "A"}, {"id": "B"}, ..., {"id": "B"} ]}
 		cnt = 0
 		for el in similar_list:
 			mate_dict["mate_id"].append({'id' : el["mid"]})
 			cnt = cnt + 1
-			if cnt > 5:
+			if cnt > 5: # the maximum number of mate is 5
 				break
 
 		mate_dict = json.dumps(mate_dict)
@@ -366,6 +366,7 @@ def mate_recommend(request):
 
 @csrf_exempt
 def mate_userplaylist(request):  #play list request
+	play_list = user_musiclist[user_id] # get user_id's playlist.
 	return
 
 
