@@ -37,8 +37,8 @@ urlpatterns = patterns('',
 	url(r'^Sympathy/mate/recommend/$', mate_recommend),
 	url(r'^Sympathy/mate/userplaylist/$', mate_userplaylist),
 	url(r'^Sympathy/mate/materequest/$', mate_materequest),
-	url(r'^Sympathy/mate/materequest/$', mate_mymatelist),
-	url(r'^Sympathy/mate/materequest/$', mate_myrequestlist),
-	url(r'^Sympathy/mate/materequest/$', mate_requestagree),
-	url(r'^Sympathy/mate/materequest/$', mate_requestreject)
+	url(r'^Sympathy/mate/mymatelist/$', mate_mymatelist),
+	url(r'^Sympathy/mate/myrequestlist/$', mate_myrequestlist),
+	url(r'^Sympathy/mate/requestagree/$', mate_requestagree),
+	url(r'^Sympathy/mate/requestreject/$', mate_requestreject)
 )
