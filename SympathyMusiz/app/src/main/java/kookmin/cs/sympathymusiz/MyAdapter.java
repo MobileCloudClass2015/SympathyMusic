@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-class MyAdapter extends BaseAdapter {
+public class MyAdapter extends BaseAdapter {
 	
     private ArrayList<String> array;	//Arraylist for managing a file list
     private Context ctx;

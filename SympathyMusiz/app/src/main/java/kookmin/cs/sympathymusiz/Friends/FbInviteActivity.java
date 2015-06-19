@@ -1,12 +1,10 @@
 package kookmin.cs.sympathymusiz.Friends;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -19,13 +17,11 @@ import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
 import com.facebook.share.widget.GameRequestDialog;
 
-import kookmin.cs.sympathymusiz.R;
-
 
 /**
  * Created by seojunkyo on 2015. 3. 18..
  */
-public class FbInviteFragment extends Fragment {
+public class FbInviteActivity extends Activity {
 
     private static final String TAG = "FacebookInvite";
     private static final int INVALID_CHOICE = -1;
@@ -40,21 +36,11 @@ public class FbInviteFragment extends Fragment {
 
     private AccessTokenTracker accessTokenTracker;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.friends_facebook_fragment, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        presentAppInviteDialog();
-    }
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        presentAppInviteDialog();
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
         FacebookCallback<AppInviteDialog.Result> appInviteCallback =
@@ -114,7 +100,7 @@ public class FbInviteFragment extends Fragment {
 
         // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.  Do so in
         // the onResume methods of the primary Activities that an app may be launched into.
-        AppEventsLogger.activateApp(getActivity());
+        AppEventsLogger.activateApp(this);
     }
 
     @Override
@@ -124,7 +110,7 @@ public class FbInviteFragment extends Fragment {
 
         // Call the 'deactivateApp' method to log an app event for use in analytics and advertising
         // reporting.  Do so in the onPause methods of the primary Activities that an app may be launched into.
-        AppEventsLogger.deactivateApp(getActivity());
+        AppEventsLogger.deactivateApp(this);
     }
 
     @Override
@@ -177,7 +163,7 @@ public class FbInviteFragment extends Fragment {
     private boolean handleNativeLink() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (accessToken == null) {
-            AccessToken.createFromNativeLinkingIntent(getActivity().getIntent(),
+            AccessToken.createFromNativeLinkingIntent(this.getIntent(),
                     FacebookSdk.getApplicationId(), new AccessToken.AccessTokenCreationCallback() {
 
                         @Override

@@ -34,8 +34,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FriendsList"></activity>
-        <activity android:name=".Friends.friendsActivity"></activity>
+        <activity android:name=".Friends.FbInviteActivity"></activity>
+        <activity android:name=".Friends.FriendsList"></activity>
 
         <activity android:name=".VideoListDemoActivity"></activity>
 

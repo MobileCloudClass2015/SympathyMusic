@@ -22,7 +22,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
-import kookmin.cs.sympathymusiz.Friends.friendsActivity;
+import kookmin.cs.sympathymusiz.Friends.FbInviteActivity;
+import kookmin.cs.sympathymusiz.Friends.FriendsList;
 
 /**
  * Created by seojunkyo on 2015. 6. 5..
@@ -40,13 +41,12 @@ public class ModeActivity extends Activity {
 
         ImageButton upload = (ImageButton)findViewById(R.id.upload);
         ImageButton friends = (ImageButton)findViewById(R.id.friends);
-
+        ImageButton share = (ImageButton)findViewById(R.id.friends_fb);
+        ImageButton recomd = (ImageButton)findViewById(R.id.friends_recomd);
 
 
         friends.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), friendsActivity.class);
-                startActivityForResult(intent, 0);
             }
         });
         upload.setOnClickListener(new Button.OnClickListener() {
@@ -57,9 +57,18 @@ public class ModeActivity extends Activity {
                 startActivityForResult(intent_upload, 1);
             }
         });
-
-
-
+        recomd.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), FriendsList.class);
+                startActivityForResult(intent, 0);
+            }
+        });
+        share.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), FbInviteActivity.class);
+                startActivityForResult(intent, 0);
+            }
+        });
     }
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
