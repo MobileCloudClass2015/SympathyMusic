@@ -47,7 +47,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-public class FriendsList extends ListActivity {
+public class FriendsRecommendList extends ListActivity {
 	
 	private EditText et;	// Variable for the search function		
 	int textlength = 0;		// Variable for the search function
@@ -97,10 +97,10 @@ public class FriendsList extends ListActivity {
 			mes = Adapter.getArr().get(position);
 			// Call CopyReadAssets function
 
-			new AlertDialog.Builder(FriendsList.this)
-					.setTitle("친구의 음악 리스트")
-					.setMessage("친구의 리스트를 보시려면 OK를 누르세요.")
-					.setPositiveButton("OK", new DialogInterface.OnClickListener()
+			new AlertDialog.Builder(FriendsRecommendList.this)
+					.setTitle("친구추천")
+					.setMessage("비슷한 음악적 취향을 가진 친구를 추천해줍니다.")
+					.setPositiveButton("플레이리스트", new DialogInterface.OnClickListener()
 					{
 						//move to notification setting page
 						@Override
@@ -115,7 +115,7 @@ public class FriendsList extends ListActivity {
 							client.post("http://52.68.143.225:9000/Sympathy/mate/userplaylist/", params, new AsyncHttpResponseHandler() {
 								@Override
 								public void onSuccess(int i, Header[] headers, byte[] bytes) {
-										Intent intent = new Intent(FriendsList.this, PlayList.class);
+										Intent intent = new Intent(FriendsRecommendList.this, PlayList.class);
 										startActivity(intent);
 								}
 
@@ -183,7 +183,7 @@ public class FriendsList extends ListActivity {
 				String json = jsonObject.toString();
 
 
-				HttpPost httpPost = new HttpPost("http://52.68.143.225:9000/Sympathy/mate/mymatelist/");
+				HttpPost httpPost = new HttpPost("http://52.68.143.225:9000/Sympathy/mate/recommend/");
 
 				ArrayList<NameValuePair> post = new ArrayList<NameValuePair>();
 
