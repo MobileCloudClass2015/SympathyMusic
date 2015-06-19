@@ -81,11 +81,18 @@
                 android:background="@drawable/btn_friends_list" />
 
             <ImageButton
+                android:id="@+id/friends_manage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/btn_friends_list" />
+
+            <ImageButton
                 android:id="@+id/friends_fb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/btn_friends_fb" />
+                android:background="@drawable/btn_friends_invite" />
         </LinearLayout>
 
     </LinearLayout>
