@@ -120,7 +120,7 @@ def music_recommend(request):
 def user_register(request):  #client 2 server login
 	if request.method == 'POST':
 		jsonstr = request.POST['data']
-		email = json.loads(jsonstr)['email']
+		email = json.loads(jsonstr)['name']
 		
 		print "login : ", email
 		jsondict = {}
