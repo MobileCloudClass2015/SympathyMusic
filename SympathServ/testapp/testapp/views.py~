@@ -79,10 +79,10 @@ class SearchList:
 # trackList = {"tracks": [{"artist": "...", "title": "...", "url": "..."}, {}, {}, {}, {}]}'''
 
 
-mate_list = {}
-user_musiclist = {}
-list_mapping = {}
-lcount = 0
+mate_list = {} # mate request list
+user_musiclist = {} # user playlist
+list_mapping = {} # music-number mapping
+lcount = 0 # the number of recommended music
 
 def mycmp(a1, a2):
 	if a1["val"] < a2["val"]:
@@ -120,7 +120,7 @@ def music_recommend(request):
 def user_register(request):  #client 2 server login
 	if request.method == 'POST':
 		jsonstr = request.POST['data']
-		email = json.loads(jsonstr)['email']
+		email = json.loads(jsonstr)['name']
 		
 		print "login : ", email
 		jsondict = {}
@@ -263,7 +263,9 @@ def music_upload(request):
 				fp.write(chunk)
 			fp.close()
 
-			user_id = request.POST['user_id']
+			#user_id = request.POST['user_id']
+
+			print user_id
 	
 			# extract feature from mp3
 			filename = "upload/" + filename
@@ -295,22 +297,34 @@ def music_upload(request):
 
 			listjson = json.loads(trackList)
 
-			if not (user_id in user_musiclist):
-				user_musiclist[user_id] = []
+			if not (user_id in user_musiclist): # if new user
+				user_musiclist[user_id] = [[],[]] # 1st list is for distance and 2nd list is for title list
 				for i in range(lcount):
-					user_musiclist[user_id].append(0)
+					user_musiclist[user_id][0].append(0) # because new user has no play history, set all value 0
 
+			# extract title data from trackList
 			for elm in listjson["tracks"]:
 				l_title = elm["title"]
-				if not(l_title in list_mapping): #new title
-					list_mapping[l_title] = lcount
+				if not(l_title in list_mapping): # new title, so there is no "title": value in list_mapping
+					list_mapping[l_title] = lcount # add "title": lcount
 					lcount = lcount + 1
-					for member in user_musiclist:
-						user_musiclist[member].append(0)
+					for member in user_musiclist: # because new title is added
+						user_musiclist[member][0].append(0) # expand playlist (user_musiclist[userID][0])
+
+				# set playlist and title list value
 				music_number = list_mapping[l_title]
-				cnt = user_musiclist[user_id][music_number]
+				# set playlist value
+				cnt = user_musiclist[user_id][0][music_number]
 				if cnt < 5:
-					user_musiclist[user_id][music_number] = cnt + 1
+					user_musiclist[user_id][0][music_number] = cnt + 1
+				# set title list value
+				if not (l_title in user_musiclist[user_id][1]):
+					user_musiclist[user_id][1].append(l_title)
+
+			for k in user_musiclist:
+				print k, ' ', user_musiclist[k]
+
+			print "list mapping : ", list_mapping
 
 			return HttpResponse(trackList)
 
@@ -333,30 +347,35 @@ def mate_recommend(request):
 		global user_musiclist
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
-		my_list = user_musiclist[user_id]
-		similar_list = []
-		for mate_id in user_musiclist:
-			if mate_id != user_id:
-				mate_list = user_musiclist[mate_id]
-				sumvalue = 0
-				for i in range(len(my_list)):
-					value = my_list[i] - mate_list[i]
+		print user_id
+
+		my_list = user_musiclist[user_id][0] # user_id's playlist
+
+		print user_musiclist
+
+		similar_list = [] # [{"mid": mate_id, "val": similar}, {...}, {...}, ..., {...}]
+		for mate_id in user_musiclist: # all playlist check
+			if mate_id != user_id: # only user_id's playlist skip
+				play_list = user_musiclist[mate_id][0] # get mate_id's playlist
+				sumvalue = 0 # distance between user_id and mate_id
+				for i in range(len(my_list)): # calculate distance
+					value = my_list[i] - play_list[i]
 					value = value*value
 					sumvalue = sumvalue + value
-				similar = 1 / (1 + sumvalue)
-				udict = {}
+				similar = 1.0 / (1 + sumvalue) # similar rate based on distance
+				udict = {} # dictionary having mate_id and similar rate
 				udict["mid"] = mate_id
 				udict["val"] = similar
 				similar_list.append(udict)
 
-		similar_list.sort(mycmp)
+		similar_list.sort(mycmp) # sorting based on similar
 
-		mate_dict = {"mate_id" : []}
+		mate_dict = {"mate_id" : []} # {"mate_id": [ {"id": "A"}, {"id": "B"}, ..., {"id": "B"} ]}
 		cnt = 0
 		for el in similar_list:
 			mate_dict["mate_id"].append({'id' : el["mid"]})
 			cnt = cnt + 1
-			if cnt > 5:
+			if cnt > 5: # the maximum number of mate is 5
 				break
 
 		mate_dict = json.dumps(mate_dict)
@@ -366,8 +385,29 @@ def mate_recommend(request):
 
 @csrf_exempt
 def mate_userplaylist(request):  #play list request
-	return
+	print "mate userplaylist"
+	if request.method == 'POST':
+		global user_musiclist
+		postdata = request.POST['data']
+		user_id = json.loads(postdata)['user_id']
 
+		print user_id
+		print "mate userplaylist : "
+		for k in user_musiclist:
+			print k, ' ', user_musiclist[k]
+
+
+		user_musicTitleList = {"titles": []}
+		title_list = user_musiclist[user_id][1] # user_id's title list
+		for i in range(len(title_list)):
+			user_musicTitleList["titles"].append({"title": title_list[i]})
+
+		print "user music Title List : "
+		print user_musicTitleList
+
+		user_musicTitleList = json.dumps(user_musicTitleList)
+		return HttpResponse(user_musicTitleList)
+	return HttpResponse('user playlist fail')
 
 @csrf_exempt #finish
 def mate_materequest(request): #mate request
@@ -377,13 +417,20 @@ def mate_materequest(request): #mate request
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
+
+		print "materequest user_id : ", user_id, " mate_id : ", mate_id
+		print "materequest1 : ", mate_list
 		
 		if not(mate_id in mate_list):
 			mate_list[mate_id] = []
 		
 		if not (user_id in mate_list[mate_id]):
 			mate_list[mate_id].append(user_id)
+
+		print "materequest2 : ", mate_list
+
 		return HttpResponse('mate request success')
+	return HttpResponse('mate request success')
 
 
 ##########################friend list
@@ -414,9 +461,12 @@ def mate_mymatelist(request): #mate request
 		retdict = {'mate_id': [], 'count': 0}
 
 
-		for i in retdata['mates']:
+		print retdata
+
+
+		for mate_info in retdata['mates']:
 			retdict['count'] = retdict['count'] + 1
-			retdict['mate_id'].append({'id' : retdata['mates'][i]['user_id']})
+			retdict['mate_id'].append({'id' : mate_info['user_id']})
 
 		retdict = json.dumps(retdict)			
 		return HttpResponse(retdict)
@@ -430,13 +480,19 @@ def mate_myrequestlist(request): #mate request
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
 
+		print "myrequestlist1 : ", user_id
+		print "myrequestlist2 : ", mate_list
+
 		retdict = {'mate_id': [], 'count': 0}
 		if user_id in mate_list:
 			for mate_id in mate_list[user_id]:
 				retdict['count'] = retdict['count'] + 1
 				retdict['mate_id'].append({'id' :mate_id})
+
+		print "myrequestlist3 : ", retdict
 		retdict = json.dumps(retdict)
 		return HttpResponse(retdict)
+	return HttpResponse("Failed my request list")
 
 	
 @csrf_exempt #finish
@@ -448,7 +504,12 @@ def mate_requestagree(request): #mate request
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
 
+		print "requestagree1 : user_id : ", user_id, " mate_id : ", mate_id
+		print "requestagree2 : ", mate_list
+
 		mate_list[user_id].remove(mate_id)
+
+		print "requestagree3 : ", mate_list
 
 		request = {}
 		request['mating_user_id'] = urllib.quote_plus(user_id)
@@ -463,6 +524,7 @@ def mate_requestagree(request): #mate request
 
 		retdata = f.read()  #track_id, title
 		return HttpResponse(retdata)
+	return HttpResponse("Failed request agree")
 		
 
 
@@ -476,8 +538,14 @@ def mate_requestreject(request): #mate request
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
 
+		print "requestreject1 : user_id : ", user_id, "mate_id : ", mate_id
+		print "requestreject2 : user_id : ", mate_list
+
 		mate_list[user_id].remove(mate_id)
+
+		print "requestreject3 : ", mate_list
 		return HttpResponse('reject : ' + mate_id)
+	return HttpResponse("Failed request reject")
 
 	
 
