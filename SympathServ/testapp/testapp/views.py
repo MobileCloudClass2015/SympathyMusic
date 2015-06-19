@@ -263,7 +263,10 @@ def music_upload(request):
 				fp.write(chunk)
 			fp.close()
 
-			user_id = request.POST['user_id']
+			#user_id = request.POST['user_id']
+			user_id = "0000@naver.com"
+
+			print user_id
 	
 			# extract feature from mp3
 			filename = "upload/" + filename
@@ -319,6 +322,11 @@ def music_upload(request):
 				if not (l_title in user_musiclist[user_id][1]):
 					user_musiclist[user_id][1].append(l_title)
 
+			for k in user_musiclist:
+				print k, ' ', user_musiclist[k]
+
+			print "list mapping : ", list_mapping
+
 			return HttpResponse(trackList)
 
 	return HttpResponse('Failed to Upload File')
@@ -340,7 +348,12 @@ def mate_recommend(request):
 		global user_musiclist
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
+		print user_id
+
 		my_list = user_musiclist[user_id][0] # user_id's playlist
+
+		print user_musiclist
+
 		similar_list = [] # [{"mid": mate_id, "val": similar}, {...}, {...}, ..., {...}]
 		for mate_id in user_musiclist: # all playlist check
 			if mate_id != user_id: # only user_id's playlist skip
@@ -375,14 +388,23 @@ def mate_recommend(request):
 def mate_userplaylist(request):  #play list request
 	print "mate userplaylist"
 	if request.method == 'POST':
-		global mate_list
+		global user_musiclist
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
+
+		print user_id
+		print "mate userplaylist : "
+		for k in user_musiclist:
+			print k, ' ', user_musiclist[k]
+
 
 		user_musicTitleList = {"titles": []}
 		title_list = user_musiclist[user_id][1] # user_id's title list
 		for i in range(len(title_list)):
 			user_musicTitleList["titles"].append({"title": title_list[i]})
+
+		print "user music Title List : "
+		print user_musicTitleList
 
 		user_musicTitleList = json.dumps(user_musicTitleList)
 		return HttpResponse(user_musicTitleList)
@@ -396,13 +418,20 @@ def mate_materequest(request): #mate request
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
+
+		print "materequest user_id : ", user_id, " mate_id : ", mate_id
+		print "materequest1 : ", mate_list
 		
 		if not(mate_id in mate_list):
 			mate_list[mate_id] = []
 		
 		if not (user_id in mate_list[mate_id]):
 			mate_list[mate_id].append(user_id)
+
+		print "materequest2 : ", mate_list
+
 		return HttpResponse('mate request success')
+	return HttpResponse('mate request success')
 
 
 ##########################friend list
@@ -433,9 +462,12 @@ def mate_mymatelist(request): #mate request
 		retdict = {'mate_id': [], 'count': 0}
 
 
-		for i in retdata['mates']:
+		print retdata
+
+
+		for mate_info in retdata['mates']:
 			retdict['count'] = retdict['count'] + 1
-			retdict['mate_id'].append({'id' : retdata['mates'][i]['user_id']})
+			retdict['mate_id'].append({'id' : mate_info['user_id']})
 
 		retdict = json.dumps(retdict)			
 		return HttpResponse(retdict)
@@ -449,13 +481,19 @@ def mate_myrequestlist(request): #mate request
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
 
+		print "myrequestlist1 : ", user_id
+		print "myrequestlist2 : ", mate_list
+
 		retdict = {'mate_id': [], 'count': 0}
 		if user_id in mate_list:
 			for mate_id in mate_list[user_id]:
 				retdict['count'] = retdict['count'] + 1
 				retdict['mate_id'].append({'id' :mate_id})
+
+		print "myrequestlist3 : ", retdict
 		retdict = json.dumps(retdict)
 		return HttpResponse(retdict)
+	return HttpResponse("Failed my request list")
 
 	
 @csrf_exempt #finish
@@ -467,7 +505,12 @@ def mate_requestagree(request): #mate request
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
 
+		print "requestagree1 : user_id : ", user_id, " mate_id : ", mate_id
+		print "requestagree2 : ", mate_list
+
 		mate_list[user_id].remove(mate_id)
+
+		print "requestagree3 : ", mate_list
 
 		request = {}
 		request['mating_user_id'] = urllib.quote_plus(user_id)
@@ -482,6 +525,7 @@ def mate_requestagree(request): #mate request
 
 		retdata = f.read()  #track_id, title
 		return HttpResponse(retdata)
+	return HttpResponse("Failed request agree")
 		
 
 
@@ -495,8 +539,14 @@ def mate_requestreject(request): #mate request
 		user_id = json.loads(postdata)['user_id']
 		mate_id = json.loads(postdata)['mate_id']
 
+		print "requestreject1 : user_id : ", user_id, "mate_id : ", mate_id
+		print "requestreject2 : user_id : ", mate_list
+
 		mate_list[user_id].remove(mate_id)
+
+		print "requestreject3 : ", mate_list
 		return HttpResponse('reject : ' + mate_id)
+	return HttpResponse("Failed request reject")
 
 	
 
