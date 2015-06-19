@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.facebook.Profile;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -57,18 +58,24 @@ public class ModeActivity extends Activity {
                 startActivityForResult(intent_upload, 1);
             }
         });
+
         recomd.setOnClickListener(new Button.OnClickListener() {
+
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), FriendsList.class);
                 startActivityForResult(intent, 0);
             }
         });
+
         share.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), FbInviteActivity.class);
                 startActivityForResult(intent, 0);
             }
         });
+
+
+
     }
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
@@ -133,8 +140,10 @@ public class ModeActivity extends Activity {
         RequestParams params = new RequestParams();
         try {
             params.put("file", myFile);
+            Profile profile = Profile.getCurrentProfile();
 
-            params.put("user_id","1111@naver.com");
+
+            params.put("user_id",profile.getName());
         } catch(FileNotFoundException e) {}
 
 

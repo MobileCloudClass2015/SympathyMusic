@@ -136,7 +136,7 @@ public class MainFragment extends Fragment {
 
                 Log.v("JSON", json);
 
-                HttpPost httpPost = new HttpPost("http://52.68.183.62:9000/Sympathy/user/register/");
+                HttpPost httpPost = new HttpPost("http://52.68.143.225:9000/Sympathy/user/register/");
 
                 ArrayList<NameValuePair> post = new ArrayList<NameValuePair>();
 
