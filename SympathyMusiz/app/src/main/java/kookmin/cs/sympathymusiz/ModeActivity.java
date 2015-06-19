@@ -1,10 +1,10 @@
 package kookmin.cs.sympathymusiz;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -24,15 +24,17 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 import kookmin.cs.sympathymusiz.Friends.FbInviteActivity;
-import kookmin.cs.sympathymusiz.Friends.FriendsList;
+import kookmin.cs.sympathymusiz.usersettings.UserSettingsFragment;
 
 /**
  * Created by seojunkyo on 2015. 6. 5..
  */
-public class ModeActivity extends Activity {
+public class ModeActivity extends FragmentActivity {
 
     ListView list;
     Cursor cursor;
+
+    private UserSettingsFragment userFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +42,19 @@ public class ModeActivity extends Activity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_mode);
 
+
         ImageButton upload = (ImageButton)findViewById(R.id.upload);
         ImageButton friends = (ImageButton)findViewById(R.id.friends);
         ImageButton share = (ImageButton)findViewById(R.id.friends_fb);
         ImageButton recomd = (ImageButton)findViewById(R.id.friends_recomd);
 
-
         friends.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+                    userFragment = new UserSettingsFragment();
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, userFragment)
+                            .commit();
             }
         });
         upload.setOnClickListener(new Button.OnClickListener() {
@@ -73,9 +80,6 @@ public class ModeActivity extends Activity {
                 startActivityForResult(intent, 0);
             }
         });
-
-
-
     }
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
@@ -103,7 +107,6 @@ public class ModeActivity extends Activity {
 
         File myFile = new File(filepath);
 
-
         RequestParams params = new RequestParams();
         try {
             params.put("file", myFile);
@@ -112,9 +115,6 @@ public class ModeActivity extends Activity {
 
             params.put("user_id",profile.getName());
         } catch(FileNotFoundException e) {}
-
-
-
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.post("http://52.68.143.225:9000/Sympathy/music/upload/", params, new AsyncHttpResponseHandler() {

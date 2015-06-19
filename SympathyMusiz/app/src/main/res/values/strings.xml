@@ -17,4 +17,9 @@
     <string name="create">Create</string>
     <string name="main_activity_uploading_progress_dialog_context">Uploading file. Please wait&#8230;</string>
 
+    <string name="usersettings_fragment_log_in_button">Log in&#8230;</string>
+    <string name="usersettings_fragment_logged_in">Logged in</string>
+    <string name="usersettings_fragment_not_logged_in">Not logged in</string>
+    <string name="usersettings_fragment_logo_content_description">Facebook Logo</string>
+
 </resources>
