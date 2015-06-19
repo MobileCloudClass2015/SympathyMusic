@@ -263,8 +263,8 @@ def music_upload(request):
 				fp.write(chunk)
 			fp.close()
 
-			#user_id = request.POST['user_id']
-			user_id = "0000@naver.com"
+			user_id = request.POST['user_id']
+			#user_id = "0000@naver.com"
 
 			print user_id
 	
