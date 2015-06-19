@@ -295,22 +295,29 @@ def music_upload(request):
 
 			listjson = json.loads(trackList)
 
-			if not (user_id in user_musiclist):
-				user_musiclist[user_id] = []
+			if not (user_id in user_musiclist): # if new user
+				user_musiclist[user_id] = [[],[]] # 1st list is for distance and 2nd list is for title list
 				for i in range(lcount):
-					user_musiclist[user_id].append(0)
+					user_musiclist[user_id][0].append(0) # because new user has no play history, set all value 0
 
+			# extract title data from trackList
 			for elm in listjson["tracks"]:
 				l_title = elm["title"]
-				if not(l_title in list_mapping): #new title
-					list_mapping[l_title] = lcount
+				if not(l_title in list_mapping): # new title, so there is no "title": value in list_mapping
+					list_mapping[l_title] = lcount # add "title": lcount
 					lcount = lcount + 1
-					for member in user_musiclist:
-						user_musiclist[member].append(0)
+					for member in user_musiclist: # because new title is added
+						user_musiclist[member][0].append(0) # expand playlist (user_musiclist[userID][0])
+
+				# set playlist and title list value
 				music_number = list_mapping[l_title]
-				cnt = user_musiclist[user_id][music_number]
+				# set playlist value
+				cnt = user_musiclist[user_id][0][music_number]
 				if cnt < 5:
-					user_musiclist[user_id][music_number] = cnt + 1
+					user_musiclist[user_id][0][music_number] = cnt + 1
+				# set title list value
+				if not (l_title in user_musiclist[user_id][1]):
+					user_musiclist[user_id][1].append(l_title)
 
 			return HttpResponse(trackList)
 
@@ -333,11 +340,11 @@ def mate_recommend(request):
 		global user_musiclist
 		postdata = request.POST['data']
 		user_id = json.loads(postdata)['user_id']
-		my_list = user_musiclist[user_id] # user_id's playlist
+		my_list = user_musiclist[user_id][0] # user_id's playlist
 		similar_list = [] # [{"mid": mate_id, "val": similar}, {...}, {...}, ..., {...}]
 		for mate_id in user_musiclist: # all playlist check
 			if mate_id != user_id: # only user_id's playlist skip
-				play_list = user_musiclist[mate_id] # get mate_id's playlist
+				play_list = user_musiclist[mate_id][0] # get mate_id's playlist
 				sumvalue = 0 # distance between user_id and mate_id
 				for i in range(len(my_list)): # calculate distance
 					value = my_list[i] - play_list[i]
@@ -366,9 +373,20 @@ def mate_recommend(request):
 
 @csrf_exempt
 def mate_userplaylist(request):  #play list request
-	play_list = user_musiclist[user_id] # get user_id's playlist.
-	return
+	print "mate userplaylist"
+	if request.method == 'POST':
+		global mate_list
+		postdata = request.POST['data']
+		user_id = json.loads(postdata)['user_id']
 
+		user_musicTitleList = {"titles": []}
+		title_list = user_musiclist[user_id][1] # user_id's title list
+		for i in range(len(title_list)):
+			user_musicTitleList["titles"].append({"title": title_list[i]})
+
+		user_musicTitleList = json.dumps(user_musicTitleList)
+		return HttpResponse(user_musicTitleList)
+	return HttpResponse('user playlist fail')
 
 @csrf_exempt #finish
 def mate_materequest(request): #mate request
