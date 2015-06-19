@@ -350,7 +350,7 @@ def mate_recommend(request):
 					value = my_list[i] - play_list[i]
 					value = value*value
 					sumvalue = sumvalue + value
-				similar = 1 / (1 + sumvalue) # similar rate based on distance
+				similar = 1.0 / (1 + sumvalue) # similar rate based on distance
 				udict = {} # dictionary having mate_id and similar rate
 				udict["mid"] = mate_id
 				udict["val"] = similar
