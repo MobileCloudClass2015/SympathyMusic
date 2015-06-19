@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.facebook.Profile;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -40,7 +41,7 @@ public class ModeActivity extends Activity {
 
         ImageButton upload = (ImageButton)findViewById(R.id.upload);
         ImageButton friends = (ImageButton)findViewById(R.id.friends);
-
+        Button test = (Button)findViewById(R.id.list_btn);
 
 
         friends.setOnClickListener(new Button.OnClickListener() {
@@ -55,6 +56,12 @@ public class ModeActivity extends Activity {
                 intent_upload.setType("audio/*");
                 intent_upload.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent_upload, 1);
+            }
+        });
+        test.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), FriendsList.class);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -124,8 +131,10 @@ public class ModeActivity extends Activity {
         RequestParams params = new RequestParams();
         try {
             params.put("file", myFile);
+            Profile profile = Profile.getCurrentProfile();
 
-            params.put("user_id","1111@naver.com");
+
+            params.put("user_id",profile.getName());
         } catch(FileNotFoundException e) {}
 
 

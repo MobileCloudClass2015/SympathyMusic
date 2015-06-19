@@ -91,7 +91,7 @@ public class FriendsList extends ListActivity {
 				long id) {
 			// TODO Auto-generated method stub
 			// �׸� �����̸� �޾ƿ���
-			String mes;
+			final String mes;
 			// Copy the selected string in a list
 			mes = Adapter.getArr().get(position);
 			// Call CopyReadAssets function
@@ -99,7 +99,7 @@ public class FriendsList extends ListActivity {
 			new AlertDialog.Builder(FriendsList.this)
 					.setTitle("친구추천")
 					.setMessage("비슷한 음악적 취향을 가진 친구를 추천해줍니다.")
-					.setPositiveButton("PlayList", new DialogInterface.OnClickListener()
+					.setPositiveButton("플레이리스트", new DialogInterface.OnClickListener()
 					{
 						//move to notification setting page
 						@Override
@@ -112,21 +112,8 @@ public class FriendsList extends ListActivity {
 							client.post("http://52.68.143.225:9000/Sympathy/music/upload/", params, new AsyncHttpResponseHandler() {
 								@Override
 								public void onSuccess(int i, Header[] headers, byte[] bytes) {
-									try {
-										list = (ListView) findViewById(android.R.id.list);
-
-										String result = new String(bytes, "UTF-8");
-										Log.d("print", result);
-
 										Intent intent = new Intent(FriendsList.this, PlayList.class);
-										intent.putExtra("paly",result);
 										startActivity(intent);
-
-
-
-									} catch (UnsupportedEncodingException e) {
-										e.printStackTrace();
-									}
 								}
 
 
@@ -141,10 +128,27 @@ public class FriendsList extends ListActivity {
 					.setNegativeButton("친구신청", new DialogInterface.OnClickListener()
 					{
 						@Override
-						public void onClick(DialogInterface dialog, int which)
+						public void onClick(final DialogInterface dialog, int which)
 						{
 
-							dialog.dismiss();
+							Log.d("확인",mes);
+							RequestParams params = new RequestParams();
+							params.put("user_id", mes);
+
+							AsyncHttpClient client = new AsyncHttpClient();
+							client.post("http://52.68.143.225:9000/Sympathy/music/upload/", params, new AsyncHttpResponseHandler() {
+								@Override
+								public void onSuccess(int i, Header[] headers, byte[] bytes) {
+									dialog.dismiss();
+								}
+
+								@Override
+								public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
+								}
+							});
+
+
 						}
 					})
 					.show();

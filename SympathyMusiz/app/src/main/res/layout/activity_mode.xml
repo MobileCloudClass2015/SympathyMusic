@@ -62,6 +62,12 @@
                 android:background="@drawable/btn_plus"/>
         </LinearLayout>
 
+        <Button
+            android:id="@+id/list_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="테스트"/>
+
 
     </LinearLayout>
 </LinearLayout>

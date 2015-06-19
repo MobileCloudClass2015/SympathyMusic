@@ -36,6 +36,7 @@
 
         <activity android:name=".FriendsList"></activity>
         <activity android:name=".Friends.friendsActivity"></activity>
+        <activity android:name=".PlayList"></activity>
 
         <activity android:name=".VideoListDemoActivity"></activity>
 
