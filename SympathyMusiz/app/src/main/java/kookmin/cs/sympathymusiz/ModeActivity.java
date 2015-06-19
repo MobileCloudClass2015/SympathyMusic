@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
+import kookmin.cs.sympathymusiz.Friends.friendsActivity;
+
 /**
  * Created by seojunkyo on 2015. 6. 5..
  */
@@ -37,35 +39,27 @@ public class ModeActivity extends Activity {
         setContentView(R.layout.activity_mode);
 
         ImageButton upload = (ImageButton)findViewById(R.id.upload);
-        ImageButton recomd = (ImageButton)findViewById(R.id.recomd);
-        ImageButton account = (ImageButton)findViewById(R.id.account);
-        ImageButton menu = (ImageButton)findViewById(R.id.menu);
+        ImageButton friends = (ImageButton)findViewById(R.id.friends);
 
 
+
+        friends.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), friendsActivity.class);
+                startActivityForResult(intent, 0);
+            }
+        });
         upload.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent intent_upload = new Intent();
                 intent_upload.setType("audio/*");
                 intent_upload.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent_upload, 1);
+            }
+        });
 
 
-                /*
-                Intent intent = new Intent(getBaseContext(), FileSelectionActivity.class);
-                startActivityForResult(intent, 0);
-                */
-            }
-        });
-        recomd.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(ModeActivity.this, VideoListDemoActivity.class);
-                startActivity(intent);
-            }
-        });
-        account.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-            }
-        });
+
     }
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
@@ -131,7 +125,7 @@ public class ModeActivity extends Activity {
         try {
             params.put("file", myFile);
 
-            params.put("user_id","1234@naver.com");
+            params.put("user_id","1111@naver.com");
         } catch(FileNotFoundException e) {}
 
 
